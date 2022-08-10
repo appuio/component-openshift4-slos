@@ -1,10 +1,16 @@
+#
+# File managed by ModuleSync - Do Not Edit
+#
+# Additional Makefiles can be added to `.sync.yml` in 'Makefile.includes'
+#
+
 # Commodore takes the root dir name as the component name
 COMPONENT_NAME ?= $(shell basename ${PWD} | sed s/component-//)
 
 compiled_path   ?= compiled/$(COMPONENT_NAME)/$(COMPONENT_NAME)
 root_volume     ?= -v "$${PWD}:/$(COMPONENT_NAME)"
 compiled_volume ?= -v "$${PWD}/$(compiled_path):/$(COMPONENT_NAME)"
-commodore_args  ?= --search-paths .
+commodore_args  ?= --search-paths ./dependencies --search-paths .
 
 ifneq "$(shell which docker 2>/dev/null)" ""
 	DOCKER_CMD    ?= $(shell which docker)
@@ -30,10 +36,10 @@ VALE_ARGS ?= --minAlertLevel=error --config=/pages/ROOT/pages/.vale.ini /pages
 
 ANTORA_PREVIEW_CMD ?= $(DOCKER_CMD) run --rm --publish 35729:35729 --publish 2020:2020 --volume "${PWD}/.git":/preview/antora/.git --volume "${PWD}/docs":/preview/antora/docs docker.io/vshn/antora-preview:3.0.1.1 --style=syn --antora=docs
 
-
 COMMODORE_CMD  ?= $(DOCKER_CMD) $(DOCKER_ARGS) $(root_volume) docker.io/projectsyn/commodore:latest
 COMPILE_CMD    ?= $(COMMODORE_CMD) component compile . $(commodore_args)
 JB_CMD         ?= $(DOCKER_CMD) $(DOCKER_ARGS) --entrypoint /usr/local/bin/jb docker.io/projectsyn/commodore:latest install
+
 GOLDEN_FILES    ?= $(shell find tests/golden/$(instance) -type f)
 
 KUBENT_FILES    ?= $(shell echo "$(GOLDEN_FILES)" | sed 's/ /,/g')
