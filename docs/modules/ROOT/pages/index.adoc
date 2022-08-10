@@ -1,0 +1,5 @@
+= openshift4-slos
+
+openshift4-slos is a Commodore component to manage openshift4-slos.
+
+See the xref:references/parameters.adoc[parameters] reference for further details.
