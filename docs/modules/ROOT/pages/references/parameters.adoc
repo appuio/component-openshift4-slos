@@ -6,14 +6,149 @@ The parent key for all of the following parameters is `openshift4_slos`.
 
 [horizontal]
 type:: string
-default:: `syn-openshift4-slos`
+default:: `appuio-openshift4-slos`
 
-The namespace in which to deploy this component.
+The default namespace for ArgoCD to fall back to.
+
+
+== `images`
+
+[horizontal]
+type:: dictionary
+
+The images to use for this component.
+
+[INFO]
+This component current doesn't deploy any active components.
+The only manifests produced are `PrometheusRule`s.
+
+
+== `images.sloth`
+
+[horizontal]
+type:: dictionary
+
+Allows Renovate to create version upgrade PRs.
+The Sloth version can be overridden by the `tag` parameter.
+
+
+== `specs`
+
+[horizontal]
+type:: dictionary
+default:: `{}`
+
+The SLO definition that are passed to Sloth.
+The key is used as the name of the resulting PrometheusRule.
+It must be a valid Kubernetes name.
+
+
+=== `specs.NAME.metadata`
+
+[horizontal]
+type:: dictionary
+example::
++
+[source,yaml]
+----
+metadata:
+  namespace: my-important-service
+  labels:
+    prometheus: apps
+----
+
+The metadata applied to the PrometheusRule manifest.
+The name is derived from the name of the parent dictionary.
+
+
+=== `specs.NAME.sloth_input`
+
+[horizontal]
+type:: dictionary
+example::
++
+[source,yaml]
+----
+sloth_input:
+  version: "prometheus/v1"
+  service: "myservice"
+  labels:
+    owner: "myteam"
+    repo: "myorg/myservice"
+    tier: "2"
+  _slos:
+    # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
+    requests-availability:
+      objective: 99.9
+      description: "Common SLO based on availability for HTTP request responses."
+      sli:
+        events:
+          error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
+          total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
+      alerting:
+        name: MyServiceHighErrorRate
+        labels:
+          category: "availability"
+        annotations:
+          # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
+          summary: "High error rate on 'myservice' requests responses"
+        page_alert:
+          labels:
+            severity: pageteam
+            routing_key: myteam
+        ticket_alert:
+          labels:
+            severity: "slack"
+            slack_channel: "#alerts-myteam"
+----
+
+The input for sloth to generate the `PrometheusRule.spec`.
+See https://sloth.dev/introduction/[Sloth introduction] for more information.
+
+The `slos` can be passed as either an array or as a dictionary with the key `_slos`.
+This is done to allow easier modification of the SLOs from the Project Syn hierarchy.
 
 
 == Example
 
 [source,yaml]
 ----
-namespace: example-namespace
+namespace: appuio-openshift4-slos
+specs:
+  getting-started:
+    metadata:
+      namespace: my-important-service
+      labels:
+        prometheus: apps
+    sloth_input:
+      version: "prometheus/v1"
+      service: "myservice"
+      labels:
+        owner: "myteam"
+        repo: "myorg/myservice"
+        tier: "2"
+      _slos:
+        # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
+        requests-availability:
+          objective: 99.9
+          description: "Common SLO based on availability for HTTP request responses."
+          sli:
+            events:
+              error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
+              total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
+          alerting:
+            name: MyServiceHighErrorRate
+            labels:
+              category: "availability"
+            annotations:
+              # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
+              summary: "High error rate on 'myservice' requests responses"
+            page_alert:
+              labels:
+                severity: pageteam
+                routing_key: myteam
+            ticket_alert:
+              labels:
+                severity: "slack"
+                slack_channel: "#alerts-myteam"
 ----

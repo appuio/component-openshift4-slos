@@ -1,0 +1,65 @@
+#!/bin/bash
+set -eu
+
+basedir=$(dirname "$0")
+version="${SLOTH_VERSION:-v0.10.0}"
+
+ensure_sloth () {
+  set -eu
+
+  local dir="$1"
+  # Version with leading `v`.
+  local version="$2"
+
+  local arch
+  arch=$(uname -m)
+  case $arch in
+    aarch64|arm64) arch="arm64";;
+    x86_64|amd64) arch="amd64";;
+    *)
+      >&2 echo "Unsupported arch: $arch"
+      exit 5
+    ::
+  esac
+
+  local os
+  os=$(uname -s)
+  case $os in
+    Linux) os="linux";;
+    Darwin) os="darwin";;
+    *)
+      >&2 echo "Unsupported os: $os"
+      exit 5
+    ::
+  esac
+
+  if [ ! -x "${dir}/sloth-${version}-${os}-${arch}" ]; then
+    download_sloth "${dir}" "${version}" "${os}" "${arch}"
+  else
+    >&2 echo "sloth-${version}-${os}-${arch} already installed"
+  fi
+
+  echo "${dir}/sloth-${version}-${os}-${arch}"
+}
+
+download_sloth () {
+  set -eu
+
+  local dir="$1"
+  local version="$2"
+  local os="$3"
+  local arch="$4"
+
+  local url="https://github.com/slok/sloth/releases/download/${version}/sloth-${os}-${arch}"
+
+  >&2 echo "Downloading sloth-${version}-${os}-${arch} from ${url}"
+
+  curl -fsSLo "${dir}/sloth-${version}-${os}-${arch}" "${url}"
+  chmod +x "${dir}/sloth-${version}-${os}-${arch}"
+
+  >&2 echo "sloth-${version}-${os}-${arch} successfully installed"
+}
+
+sloth=$(ensure_sloth "$basedir" "$version")
+
+"$sloth" "$@"

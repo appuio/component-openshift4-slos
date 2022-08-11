@@ -5,7 +5,41 @@ parameters:
           - ${_base_directory}/component/app.jsonnet
         input_type: jsonnet
         output_path: apps/
+
+      - input_paths:
+          - ${_base_directory}/component/sloth-input.jsonnet
+        input_type: jsonnet
+        output_path: ${_base_directory}/sloth-input
+        output_type: yaml
+
+      - input_type: external
+        input_paths:
+          - /bin/mkdir
+        args:
+          - -p
+          - ${_base_directory}/sloth-output
+        output_path: .
+      - input_type: external
+        input_paths:
+          - openshift4-slos/run-sloth
+        output_path: .
+        env_vars:
+          SLOTH_VERSION: ${openshift4_slos:images:sloth:tag}
+        args:
+          - generate
+          - -i
+          - ${_base_directory}/sloth-input
+          - -o
+          - ${_base_directory}/sloth-output
+
       - input_paths:
           - ${_base_directory}/component/main.jsonnet
         input_type: jsonnet
         output_path: openshift4-slos/
+
+      # Cleanup
+      - input_paths:
+          - ${_base_directory}/sloth-input
+          - ${_base_directory}/sloth-output
+        input_type: remove
+        output_path: .
