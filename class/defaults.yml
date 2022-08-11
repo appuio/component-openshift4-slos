@@ -1,4 +1,13 @@
 parameters:
   openshift4_slos:
     =_metadata: {}
-    namespace: syn-openshift4-slos
+    namespace: appuio-openshift4-slos
+
+    images:
+      # The image will not be used. It is here so Renovate can update the Sloth version.
+      sloth:
+        registry: ghcr.io
+        image: slok/sloth
+        tag: v0.10.0
+
+    specs: {}

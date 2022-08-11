@@ -9,3 +9,8 @@
 .github/workflows/test.yaml:
   test_makeTarget: test -e instance=${{ matrix.instance }}
   goldenTest_makeTarget: golden-diff -e instance=${{ matrix.instance }}
+
+.gitignore:
+  additionalEntries:
+    # Downloaded sloth cli
+    - /sloth-*
