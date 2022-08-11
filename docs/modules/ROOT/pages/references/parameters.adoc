@@ -69,37 +69,39 @@ example::
 +
 [source,yaml]
 ----
-sloth_input:
-  version: "prometheus/v1"
-  service: "myservice"
-  labels:
-    owner: "myteam"
-    repo: "myorg/myservice"
-    tier: "2"
-  _slos:
-    # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
-    requests-availability:
-      objective: 99.9
-      description: "Common SLO based on availability for HTTP request responses."
-      sli:
-        events:
-          error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
-          total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
-      alerting:
-        name: MyServiceHighErrorRate
-        labels:
-          category: "availability"
-        annotations:
-          # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
-          summary: "High error rate on 'myservice' requests responses"
-        page_alert:
+appuio-ch-http-get-availability:
+  sloth_input:
+    version: "prometheus/v1"
+    service: "appuio-ch"
+    labels:
+      owner: "myteam"
+    _slos:
+      # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
+      appuio-ch-http-get-availability:
+        objective: 99.9
+        description: "SLO based on availability for blackbox HTTP GET request."
+        sli:
+          raw:
+            error_ratio_query: |
+              1 - (
+                  sum_over_time(probe_success{instance="https://www.appuio.ch/"}[{{.window}}])
+                /
+                  count_over_time(up{instance="https://www.appuio.ch/"}[{{.window}}])
+              )
+        alerting:
+          name: AppuioChHttpGetErrorRatio
           labels:
-            severity: pageteam
-            routing_key: myteam
-        ticket_alert:
-          labels:
-            severity: "slack"
-            slack_channel: "#alerts-myteam"
+            category: "availability"
+          annotations:
+            # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
+            summary: "High error rate on 'appuio.ch' responses"
+          page_alert:
+            labels:
+              severity: warning
+          ticket_alert:
+            labels:
+              severity: warning
+              routing_key: myteam
 ----
 
 The input for sloth to generate the `PrometheusRule.spec`.
@@ -109,46 +111,138 @@ The `slos` can be passed as either an array or as a dictionary with the key `_sl
 This is done to allow easier modification of the SLOs from the Project Syn hierarchy.
 
 
+== `blackbox_exporter`
+
+[horizontal]
+type:: dictionary
+
+`blackbox_exporter` allows setting up a optional Blackbox exporter.
+
+
+=== `blackbox_exporter.enabled`
+
+[horizontal]
+type:: boolean
+default:: `true`
+
+Controls whether the Blackbox exporter is deployed.
+
+
+=== `blackbox_exporter.name`
+
+[horizontal]
+type:: string
+default:: `prometheus-blackbox-exporter`
+
+The name of the Blackbox exporter deployment.
+
+
+=== `blackbox_exporter.namespace`
+
+[horizontal]
+type:: string
+default:: `${openshift4_slos:namespace}`
+
+The namespace of the Blackbox exporter deployment.
+
+
+=== `blackbox_exporter.deployment.resources`
+
+[horizontal]
+type:: dictionary
+default:: see https://github.com/appuio/component-openshift4-slos/blob/master/class/defaults.yml[class/defaults.yml]
+
+The resources to use for the Blackbox exporter deployment.
+
+
+=== `blackbox_exporter.config`
+
+[horizontal]
+type:: dictionary
+default:: see https://github.com/appuio/component-openshift4-slos/blob/master/class/defaults.yml[class/defaults.yml]
+
+The blackbox exporter configuration. See https://github.com/prometheus/blackbox_exporter#configuration[Configuration] for more information.
+
+
+=== `blackbox_exporter.probes`
+
+[horizontal]
+type:: dictionary
+default:: `{}`
+example::
++
+[source,yaml]
+----
+probes:
+  http-appuio-ch:
+    spec:
+      jobName: get-http-appuio-ch
+      interval: 15s
+      module: http_2xx
+      targets:
+        staticConfig:
+          static:
+            - https://www.appuio.ch/
+----
+
+The https://docs.openshift.com/container-platform/4.10/rest_api/monitoring_apis/probe-monitoring-coreos-com-v1.html[Probe] definition that are passed to Sloth.
+The key is used as the name of the resulting Probe.
+It must be a valid Kubernetes name.
+
+[INFO]
+The `.spec.prober` part is automatically filled from the Blackbox exporter configuration and can omitted.
+
+
 == Example
 
 [source,yaml]
 ----
 namespace: appuio-openshift4-slos
+
 specs:
-  getting-started:
-    metadata:
-      namespace: my-important-service
-      labels:
-        prometheus: apps
+  appuio-ch-http-get-availability:
     sloth_input:
       version: "prometheus/v1"
-      service: "myservice"
+      service: "appuio-ch"
       labels:
         owner: "myteam"
-        repo: "myorg/myservice"
-        tier: "2"
       _slos:
         # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
-        requests-availability:
+        appuio-ch-http-get-availability:
           objective: 99.9
-          description: "Common SLO based on availability for HTTP request responses."
+          description: "SLO based on availability for blackbox HTTP GET request."
           sli:
-            events:
-              error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
-              total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
+            raw:
+              error_ratio_query: |
+                1 - (
+                    sum_over_time(probe_success{instance="https://www.appuio.ch/"}[{{.window}}])
+                  /
+                    count_over_time(up{instance="https://www.appuio.ch/"}[{{.window}}])
+                )
           alerting:
-            name: MyServiceHighErrorRate
+            name: AppuioChHttpGetErrorRatio
             labels:
               category: "availability"
             annotations:
               # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
-              summary: "High error rate on 'myservice' requests responses"
+              summary: "High error rate on 'appuio.ch' responses"
             page_alert:
               labels:
-                severity: pageteam
-                routing_key: myteam
+                severity: warning
             ticket_alert:
               labels:
-                severity: "slack"
-                slack_channel: "#alerts-myteam"
+                severity: warning
+                routing_key: myteam
+
+blackbox_exporter:
+  probes:
+    http-appuio-ch:
+      spec:
+        jobName: get-http-appuio-ch
+        interval: 15s
+        module: http_2xx
+        targets:
+          staticConfig:
+            static:
+              - https://www.appuio.ch/
 ----

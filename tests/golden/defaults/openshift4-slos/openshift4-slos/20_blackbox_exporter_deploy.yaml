@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: openshift4-slos
+    app.kubernetes.io/instance: prometheus-blackbox-exporter
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    name: prometheus-blackbox-exporter
+  name: prometheus-blackbox-exporter
+  namespace: appuio-openshift4-slos
+spec:
+  minReadySeconds: 30
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: prometheus-blackbox-exporter
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        checksum/config: f9549db9064c29961e29525a5096f645
+      labels:
+        app.kubernetes.io/component: openshift4-slos
+        app.kubernetes.io/instance: prometheus-blackbox-exporter
+        app.kubernetes.io/managed-by: commodore
+        app.kubernetes.io/name: prometheus-blackbox-exporter
+        name: prometheus-blackbox-exporter
+    spec:
+      containers:
+        - args:
+            - --config.file=/config/blackbox.yaml
+          env: []
+          image: docker.io/prom/blackbox-exporter:v0.22.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          name: blackbox-exporter
+          ports:
+            - containerPort: 9115
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            limits:
+              cpu: 20m
+              memory: 40Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          securityContext: {}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      restartPolicy: Always
+      securityContext: {}
+      serviceAccountName: prometheus-blackbox-exporter
+      volumes:
+        - configMap:
+            name: prometheus-blackbox-exporter
+          name: config

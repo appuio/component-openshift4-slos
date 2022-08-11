@@ -1,0 +1,210 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    name: appuio-ch-http-get-availability
+  name: appuio-ch-http-get-availability
+spec:
+  groups:
+    - name: sloth-slo-sli-recordings-appuio-ch-appuio-ch-http-get-availability
+      rules:
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[5m])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[5m])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[30m])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[30m])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[1h])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[1h])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[2h])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[2h])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[6h])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[6h])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[1d])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[1d])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
+            }[3d])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
+            }[3d])\n)\n)"
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: 'sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}[30d])
+
+            / ignoring (sloth_window)
+
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}[30d])
+
+            '
+          labels:
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-appuio-ch-appuio-ch-http-get-availability
+      rules:
+        - expr: vector(0.9990000000000001)
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+          record: slo:objective:ratio
+        - expr: vector(1-0.9990000000000001)
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+          record: slo:time_period:days
+        - expr: 'slo:sli_error:ratio_rate5m{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}
+
+            '
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+          record: slo:current_burn_rate:ratio
+        - expr: 'slo:sli_error:ratio_rate30d{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}
+
+            '
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="appuio-ch-appuio-ch-http-get-availability",
+            sloth_service="appuio-ch", sloth_slo="appuio-ch-http-get-availability"}
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99.9'
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
+            sloth_spec: prometheus/v1
+            sloth_version: v0.10.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-appuio-ch-appuio-ch-http-get-availability
+      rules:
+        - alert: AppuioChHttpGetErrorRatio
+          annotations:
+            summary: High error rate on 'appuio.ch' responses
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (14.4 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n\
+            \    (slo:sli_error:ratio_rate1h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n\
+            \    (slo:sli_error:ratio_rate30m{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (6 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n  \
+            \  (slo:sli_error:ratio_rate6h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (6 * 0.0009999999999999432))\n)\n"
+          labels:
+            category: availability
+            severity: warning
+            sloth_severity: page
+        - alert: AppuioChHttpGetErrorRatio
+          annotations:
+            summary: High error rate on 'appuio.ch' responses
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (3 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n  \
+            \  (slo:sli_error:ratio_rate1d{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n \
+            \   (slo:sli_error:ratio_rate6h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (1 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n  \
+            \  (slo:sli_error:ratio_rate3d{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
+            } > (1 * 0.0009999999999999432))\n)\n"
+          labels:
+            category: availability
+            routing_key: myteam
+            severity: warning
+            sloth_severity: ticket

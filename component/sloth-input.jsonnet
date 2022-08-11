@@ -21,7 +21,7 @@ local specs = std.mapWithKey(
 );
 
 if std.length(specs) == 0 then
-  # Create an empty yaml file so sloth does not throw an error "No files found"
+  // Create an empty yaml file so sloth does not throw an error "No files found"
   { empty: null }
 else
   std.mapWithKey(function(name, obj) obj.sloth_input, specs)
