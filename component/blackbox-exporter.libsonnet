@@ -57,22 +57,19 @@ local deploy = com.namespaced(
           },
           labels+: labels,
         },
-        spec: {
+        spec+: {
           containers: [
-            {
+            kube.Container('blackbox-exporter') {
               args: [
                 '--config.file=/config/blackbox.yaml',
               ],
-              env: [],
               image: '%s/%s:%s' % [ params.images.blackbox_exporter.registry, params.images.blackbox_exporter.image, params.images.blackbox_exporter.tag ],
               imagePullPolicy: 'IfNotPresent',
-              name: 'blackbox-exporter',
-              ports: [
-                {
+              ports_: {
+                http: {
                   containerPort: 9115,
-                  name: 'http',
                 },
-              ],
+              },
               local probe = {
                 httpGet: {
                   path: '/health',
@@ -83,25 +80,23 @@ local deploy = com.namespaced(
               readinessProbe: probe,
               resources: params.blackbox_exporter.deployment.resources,
               securityContext: {},
-              volumeMounts: [
-                {
+              volumeMounts_: {
+                config: {
                   mountPath: '/config',
-                  name: 'config',
                 },
-              ],
+              },
             },
           ],
           restartPolicy: 'Always',
           securityContext: {},
           serviceAccountName: sa.metadata.name,
-          volumes: [
-            {
+          volumes_: {
+            config: {
               configMap: {
                 name: configMap.metadata.name,
               },
-              name: 'config',
             },
-          ],
+          },
         },
       },
     },
