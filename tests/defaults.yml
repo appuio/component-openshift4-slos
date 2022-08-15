@@ -3,37 +3,48 @@
 parameters:
   openshift4_slos:
     specs:
-      getting-started:
-        metadata:
-          namespace: getting-started-ns
+      appuio-ch-http-get-availability:
         sloth_input:
           version: "prometheus/v1"
-          service: "myservice"
+          service: "appuio-ch"
           labels:
             owner: "myteam"
-            repo: "myorg/myservice"
-            tier: "2"
           _slos:
             # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
-            requests-availability:
+            appuio-ch-http-get-availability:
               objective: 99.9
-              description: "Common SLO based on availability for HTTP request responses."
+              description: "SLO based on availability for blackbox HTTP GET request."
               sli:
-                events:
-                  error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
-                  total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
+                raw:
+                  error_ratio_query: |
+                    1 - (
+                        sum_over_time(probe_success{instance="https://www.appuio.ch/"}[{{.window}}])
+                      /
+                        count_over_time(up{instance="https://www.appuio.ch/"}[{{.window}}])
+                    )
               alerting:
-                name: MyServiceHighErrorRate
+                name: AppuioChHttpGetErrorRatio
                 labels:
                   category: "availability"
                 annotations:
                   # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
-                  summary: "High error rate on 'myservice' requests responses"
+                  summary: "High error rate on 'appuio.ch' responses"
                 page_alert:
                   labels:
-                    severity: pageteam
-                    routing_key: myteam
+                    severity: warning
                 ticket_alert:
                   labels:
-                    severity: "slack"
-                    slack_channel: "#alerts-myteam"
+                    severity: warning
+                    routing_key: myteam
+
+    blackbox_exporter:
+      probes:
+        http-appuio-ch:
+          spec:
+            jobName: get-http-appuio-ch
+            interval: 15s
+            module: http_2xx
+            targets:
+              staticConfig:
+                static:
+                  - https://www.appuio.ch/

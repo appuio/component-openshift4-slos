@@ -9,5 +9,46 @@ parameters:
         registry: ghcr.io
         image: slok/sloth
         tag: v0.10.0
+      blackbox_exporter:
+        registry: docker.io
+        image: prom/blackbox-exporter
+        tag: v0.22.0
 
     specs: {}
+
+    blackbox_exporter:
+      enabled: true
+      name: prometheus-blackbox-exporter
+      namespace: ${openshift4_slos:namespace}
+      probes: {}
+      deployment:
+        resources:
+          limits:
+            cpu: '20m'
+            memory: '40Mi'
+          requests:
+            cpu: '10m'
+            memory: '20Mi'
+      config:
+        modules:
+          http_2xx:
+            http:
+              follow_redirects: true
+              preferred_ip_protocol: ip4
+            prober: http
+            timeout: 5s
+          http_post_2xx:
+            http:
+              method: POST
+              preferred_ip_protocol: ip4
+            prober: http
+          ssh_banner:
+            prober: tcp
+            tcp:
+              preferred_ip_protocol: ip4
+              query_response:
+                - expect: ^SSH-2.0-
+          tcp_connect:
+            prober: tcp
+            tcp:
+              preferred_ip_protocol: ip4

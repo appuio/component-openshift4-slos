@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  annotations: {}
+  labels:
+    name: http-appuio-ch
+  name: http-appuio-ch
+  namespace: appuio-openshift4-slos
+spec:
+  interval: 15s
+  jobName: get-http-appuio-ch
+  module: http_2xx
+  prober:
+    path: /probe
+    scheme: http
+    url: prometheus-blackbox-exporter.appuio-openshift4-slos.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - https://www.appuio.ch/
