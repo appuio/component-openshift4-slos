@@ -12,7 +12,21 @@ local specs = std.mapWithKey(
     obj {
       sloth_input+: {
         [if std.objectHas(obj.sloth_input, '_slos') then 'slos']+: [
-          obj.sloth_input._slos[name] { name: name }
+          {
+            alerting: {
+              labels: params.alerting.labels,
+              page_alert: {
+                labels: params.alerting.page_labels,
+              },
+              ticket_alert: {
+                labels: params.alerting.ticket_labels,
+              },
+            },
+          }
+          +
+          com.makeMergeable(
+            obj.sloth_input._slos[name] { name: name }
+          )
           for name in std.objectFields(obj.sloth_input._slos)
         ],
       },

@@ -186,6 +186,8 @@ spec:
             category: availability
             severity: warning
             sloth_severity: page
+            syn: 'true'
+            syn_component: openshift4-slos
         - alert: AppuioChHttpGetErrorRatio
           annotations:
             summary: High error rate on 'appuio.ch' responses
@@ -208,3 +210,5 @@ spec:
             routing_key: myteam
             severity: warning
             sloth_severity: ticket
+            syn: 'true'
+            syn_component: openshift4-slos
