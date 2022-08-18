@@ -3,25 +3,15 @@ local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 
+local slos = import 'slos.libsonnet';
+
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
-local specs = std.mapWithKey(
-  function(name, obj)
-    obj {
-      sloth_input+: {
-        [if std.objectHas(obj.sloth_input, '_slos') then 'slos']+: [
-          obj.sloth_input._slos[name] { name: name }
-          for name in std.objectFields(obj.sloth_input._slos)
-        ],
-      },
-    },
-  params.specs
-);
-
-if std.length(specs) == 0 then
+local input = std.mapWithKey(function(name, obj) obj.sloth_input, slos.Specs);
+if std.length(input) == 0 then
   // Create an empty yaml file so sloth does not throw an error "No files found"
   { empty: null }
 else
-  std.mapWithKey(function(name, obj) obj.sloth_input, specs)
+  input

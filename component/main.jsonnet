@@ -2,9 +2,13 @@
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
+
+local slo = import 'slos.libsonnet';
+
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
+
 
 // Define outputs below
 local mergeSpec = function(name, spec)
@@ -15,6 +19,8 @@ local mergeSpec = function(name, spec)
     spec: slothRendered,
   }
 ;
+
+local rules = std.mapWithKey(mergeSpec, slo.Specs);
 
 local probes = com.generateResources(
   params.blackbox_exporter.probes,
@@ -41,4 +47,6 @@ local probes = com.generateResources(
     },
   },
   '20_probes': probes,
-} + (import 'blackbox-exporter.libsonnet') + std.mapWithKey(mergeSpec, params.specs)
+}
++ (import 'blackbox-exporter.libsonnet')
++ rules

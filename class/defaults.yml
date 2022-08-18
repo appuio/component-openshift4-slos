@@ -14,6 +14,15 @@ parameters:
         image: prom/blackbox-exporter
         tag: v0.22.0
 
+    alerting:
+      labels:
+        syn: "true"
+        syn_component: "openshift4-slos"
+      page_labels:
+        severity: critical
+      ticket_labels:
+        severity: warning
+
     specs: {}
 
     blackbox_exporter:
