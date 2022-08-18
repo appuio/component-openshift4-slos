@@ -25,7 +25,7 @@ local patchSLO(slo) =
   local enabled = com.getValueOrDefault(p, 'enabled', true);
   if enabled then p else null;
 
-local extractSlothInput(name, spec) =
+local patchSlothInput(name, spec) =
   local slos = std.prune(std.map(
     patchSLO,
     com.getValueOrDefault(spec.sloth_input, 'slos', [])
@@ -38,14 +38,14 @@ local extractSlothInput(name, spec) =
     ]
   ));
   if std.length(slos) > 0 then
-    spec.sloth_input {
-      slos: slos,
+    spec {
+      sloth_input+: {
+        slos: slos,
+      },
     }
   else null;
 
 
-local input = std.prune(std.mapWithKey(extractSlothInput, params.specs));
-
 {
-  Input: input,
+  Specs: std.prune(std.mapWithKey(patchSlothInput, params.specs)),
 }
