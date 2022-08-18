@@ -10,6 +10,17 @@ parameters:
           labels:
             owner: "myteam"
           _slos:
+            disabled-slo:
+              enabled: false
+              objective: 99.9999999
+              description: "Unrealistic SLO we disable."
+              sli:
+                events:
+                  error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
+                  total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
+              alerting:
+                name: WebsiteNotAlwaysUP
+
             # We allow failing (5xx and 429) 1 request every 1000 requests (99.9%).
             appuio-ch-http-get-availability:
               objective: 99.9
@@ -36,6 +47,24 @@ parameters:
                   labels:
                     severity: warning
                     routing_key: myteam
+
+        unused-slos:
+          sloth_input:
+            version: "prometheus/v1"
+            service: "appuio-ch"
+            labels:
+              owner: "nobody"
+            _slos:
+              disabled-slo:
+                enabled: false
+                objective: 99.9999999
+                description: "Unrealistic SLO we disable."
+                sli:
+                  events:
+                    error_query: sum(rate(http_request_duration_seconds_count{job="myservice",code=~"(5..|429)"}[{{.window}}]))
+                    total_query: sum(rate(http_request_duration_seconds_count{job="myservice"}[{{.window}}]))
+                alerting:
+                  name: WebsiteNotAlwaysUP
 
     blackbox_exporter:
       probes:

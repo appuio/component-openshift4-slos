@@ -7,35 +7,46 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
-local specs = std.mapWithKey(
-  function(name, obj)
-    obj {
-      sloth_input+: {
-        [if std.objectHas(obj.sloth_input, '_slos') then 'slos']+: [
-          {
-            alerting: {
-              labels: params.alerting.labels,
-              page_alert: {
-                labels: params.alerting.page_labels,
-              },
-              ticket_alert: {
-                labels: params.alerting.ticket_labels,
-              },
-            },
-          }
-          +
-          com.makeMergeable(
-            obj.sloth_input._slos[name] { name: name }
-          )
-          for name in std.objectFields(obj.sloth_input._slos)
-        ],
+local patchSLO(slo) =
+  local p =
+    {
+      alerting: {
+        labels: params.alerting.labels,
+        page_alert: {
+          labels: params.alerting.page_labels,
+        },
+        ticket_alert: {
+          labels: params.alerting.ticket_labels,
+        },
       },
-    },
-  params.specs
-);
+    }
+    +
+    com.makeMergeable(slo);
+  local enabled = com.getValueOrDefault(p, 'enabled', true);
+  if enabled then p else null;
 
-if std.length(specs) == 0 then
+local extractSlothInput(name, spec) =
+  local slos = std.prune(std.map(
+    patchSLO,
+    com.getValueOrDefault(spec.sloth_input, 'slos', [])
+    +
+    [
+      spec.sloth_input._slos[name] { name: name }
+      for name in std.objectFields(
+        com.getValueOrDefault(spec.sloth_input, '_slos', {})
+      )
+    ]
+  ));
+  if std.length(slos) > 0 then
+    spec.sloth_input {
+      slos: slos,
+    }
+  else null;
+
+
+local input = std.prune(std.mapWithKey(extractSlothInput, params.specs));
+if std.length(input) == 0 then
   // Create an empty yaml file so sloth does not throw an error "No files found"
   { empty: null }
 else
-  std.mapWithKey(function(name, obj) obj.sloth_input, specs)
+  input
