@@ -56,7 +56,7 @@ The SLO can be disabled by setting `enabled` to false.
 You can configure which volume plugins or storage operations are considered for the SLO by setting `_sli.volume_plugin`  or `_sli.operation_name` respectively.
 The fields can contain an arbitrary https://prometheus.io/docs/prometheus/latest/querying/basics/#instant-vector-selectors[PromQL regex label matcher].
 
-Any field is added directly to the `slo` input for sloth.
+Any additional field is added directly to the `slo` input for sloth.
 
 NOTE: Look at xref:runbooks/storage.adoc#csi-operations[the runbook] for an explanation of this SLO.
 
