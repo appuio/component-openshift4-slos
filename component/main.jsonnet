@@ -2,12 +2,18 @@
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
+
+local sloth = import 'sloth.libsonnet';
+
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
+local input = sloth.Input;
+
 // Define outputs below
-local mergeSpec = function(name, spec)
+local mergeSpec = function(name, input)
+  local spec = params.specs[name];
   local slothRendered = std.parseJson(kap.yaml_load('%s/sloth-output/%s.yaml' % [ inv.parameters._base_directory, name ]));
   local metadata = com.makeMergeable(std.get(spec, 'metadata', {}));
   kube._Object('monitoring.coreos.com/v1', 'PrometheusRule', name) {
@@ -15,6 +21,8 @@ local mergeSpec = function(name, spec)
     spec: slothRendered,
   }
 ;
+
+local rules = std.mapWithKey(mergeSpec, sloth.Input);
 
 local probes = com.generateResources(
   params.blackbox_exporter.probes,
@@ -41,4 +49,6 @@ local probes = com.generateResources(
     },
   },
   '20_probes': probes,
-} + (import 'blackbox-exporter.libsonnet') + std.mapWithKey(mergeSpec, params.specs)
+}
++ (import 'blackbox-exporter.libsonnet')
++ rules
