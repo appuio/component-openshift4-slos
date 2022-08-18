@@ -1,4 +1,3 @@
-// main template for openshift4-slos
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
@@ -6,6 +5,35 @@ local kube = import 'lib/kube.libjsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
+
+local defaultSlos = {
+  storage: {
+    local config = params.slos.storage,
+    sloth_input: {
+      version: 'prometheus/v1',
+      service: 'storage',
+      _slos: {
+        'csi-operations': {
+          description: 'SLO based on number of failed csi operations',
+          sli: {
+            events: {
+              error_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[{{.window}}]))',
+              total_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[{{.window}}]))',
+            },
+          },
+          alerting: {
+            name: 'StorageOperationHighErrorRate',
+            annotations: {
+              summary: 'High storage operation error rate',
+            },
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config['csi-operations'],
+      },
+    },
+  },
+};
 
 local patchSLO(slo) =
   local p =
@@ -46,6 +74,21 @@ local patchSlothInput(name, spec) =
   else null;
 
 
+local addRunbook(name, spec) =
+  local f(sloName, slo) = slo {
+    alerting+: {
+      annotations+: {
+        runbook_url: 'https://hub.syn.tools/openshift4-slos/runbooks/%s.html#%s' % [ name, sloName ],
+      },
+    },
+  };
+  spec {
+    sloth_input+: {
+      _slos: std.mapWithKey(f, spec.sloth_input._slos),
+    },
+  };
+
+local specs = std.mapWithKey(addRunbook, defaultSlos) + com.makeMergeable(params.specs);
 {
-  Specs: std.prune(std.mapWithKey(patchSlothInput, params.specs)),
+  Specs: std.prune(std.mapWithKey(patchSlothInput, specs)),
 }

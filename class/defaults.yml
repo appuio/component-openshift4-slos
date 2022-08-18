@@ -23,6 +23,12 @@ parameters:
       ticket_labels:
         severity: warning
 
+    slos:
+      storage:
+        csi-operations:
+          enabled: true
+          objective: 99.5
+
     specs: {}
 
     blackbox_exporter:
