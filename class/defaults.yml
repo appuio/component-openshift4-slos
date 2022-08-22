@@ -28,6 +28,9 @@ parameters:
         csi-operations:
           enabled: true
           objective: 99.5
+          _sli:
+            volume_plugin: "kubernetes.io/csi.+"
+            operation_name: ".+"
 
     specs: {}
 

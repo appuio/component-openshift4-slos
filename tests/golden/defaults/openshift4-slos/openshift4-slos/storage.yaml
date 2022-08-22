@@ -9,11 +9,11 @@ spec:
   groups:
     - name: sloth-slo-sli-recordings-storage-csi-operations
       rules:
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[5m])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[5m])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[5m])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[5m])))
 
             '
           labels:
@@ -22,11 +22,11 @@ spec:
             sloth_slo: csi-operations
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[30m])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[30m])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[30m])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[30m])))
 
             '
           labels:
@@ -35,11 +35,11 @@ spec:
             sloth_slo: csi-operations
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[1h])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1h])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[1h])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1h])))
 
             '
           labels:
@@ -48,11 +48,11 @@ spec:
             sloth_slo: csi-operations
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[2h])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[2h])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[2h])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[2h])))
 
             '
           labels:
@@ -61,11 +61,11 @@ spec:
             sloth_slo: csi-operations
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[6h])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[6h])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[6h])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[6h])))
 
             '
           labels:
@@ -74,11 +74,11 @@ spec:
             sloth_slo: csi-operations
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[1d])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1d])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[1d])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1d])))
 
             '
           labels:
@@ -87,11 +87,11 @@ spec:
             sloth_slo: csi-operations
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
-        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[3d])))
+        - expr: '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[3d])))
 
             /
 
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[3d])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[3d])))
 
             '
           labels:

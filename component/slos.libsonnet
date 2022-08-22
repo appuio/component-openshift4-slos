@@ -17,8 +17,8 @@ local defaultSlos = {
           description: 'SLO based on number of failed csi operations',
           sli: {
             events: {
-              error_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",status="fail-unknown"}[{{.window}}]))',
-              total_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+"}[{{.window}}]))',
+              error_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s",status="fail-unknown"}[{{.window}}]))' % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
+              total_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s"}[{{.window}}]))' % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
             },
           },
           alerting: {
