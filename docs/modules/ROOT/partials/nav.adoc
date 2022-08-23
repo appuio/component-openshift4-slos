@@ -1,2 +1,6 @@
 * xref:index.adoc[Home]
 * xref:references/parameters.adoc[Parameters]
+
+* SLO Runbooks
+** xref:runbooks/storage.adoc[Storage SLOs]
+

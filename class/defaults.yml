@@ -23,6 +23,15 @@ parameters:
       ticket_labels:
         severity: warning
 
+    slos:
+      storage:
+        csi-operations:
+          enabled: true
+          objective: 99.5
+          _sli:
+            volume_plugin: "kubernetes.io/csi.+"
+            operation_name: ".+"
+
     specs: {}
 
     blackbox_exporter:

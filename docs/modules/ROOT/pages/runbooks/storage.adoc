@@ -1,0 +1,78 @@
+= Storage SLOs
+
+include::partial$runbooks/contribution_note.adoc[]
+
+[[csi-operations]]
+== Storage Operations
+
+=== icon:glasses[] Overview
+
+This SLO measures the percentage of failed storage operations, reported by kubelets and the controller-manager.
+The error rate is a general indicator of the health of the storage provider, but might not show you the root cause of the issue.
+
+There are two types of alerts that fire if we expect to miss the configured SLO objective.
+
+* A ticket alert means that the error rate is slightly higher than the objective.
+If we don't intervene at some point after receiving this alert, we can expect to miss the objective.
+However no immediate, urgent action is necessary.
+A ticket alert should have a label `severity: warning`.
+* A page alert means that the error rate is significantly higher than the objective.
+Immediate action is necessary to not miss the objective.
+A page alert should have a label `severity: critical` and should page on-call.
+
+=== icon:bug[] Steps for debugging
+
+A high storage operations error rate can have many root causes.
+To narrow down the issue we first need to find out which operations and which providers are effected.
+
+Connect to the Prometheus on the cluster and run the following query:
+
+[source,promql]
+----
+sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+", status="fail-unknown"}[5m])) by (job, operation_name, volume_plugin, node)
+----
+
+This should return one or more time series.
+With these you should be able to narrow down the issue:
+
+* If all time series have the same `volume_plugin` label the issue is most likely caused by that provider.
+Look at the logs of that csi provider to investigate further.
+* If they have the same `node` label it might be an issue with one specific node.
+* If all have the same `operation_name` label then there is an issue with this specific operation.
+For `volume_attach` and `volume_detach` check if the controller-manager logs anything useful.
+For all other operations the kubelet might log more information.
+* If all time series have the same `job` label it might be an issue with the kubelet or the controller-manager, look at the respective logs.
+
+This should give you a starting point to investigate the root cause.
+You should also check if there are other, related firing alerts and create/delete a test PVC to properly assess the impact of this alert.
+
+NOTE: We don't have a lot of experience with this alert yet.
+If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
+
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, restrict the SLO to certain storage operations or volume plugins, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 99.25%, disable the page alert, and only consider the Syn-managed CephFS storage provider.
+This means this SLO won't alert on-call anymore and won't alert if there are issues with CSI plugins other than the Syn-managed CephFS CSI plugin.
+
+[source,yaml]
+----
+slos:
+  storage:
+    csi-operations:
+      objective: 99.25
+      _sli:
+        volume_plugin: "kubernetes.io/csi:syn-rook-ceph-operator.cephfs.csi.ceph.com"
+      alerting:
+        page_alert:
+          enabled: false
+
+----
+
+WARNING: Diabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
+Only disable SLOs if they're not relevant, not if the alerts are noisy.
