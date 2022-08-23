@@ -31,6 +31,11 @@ parameters:
           _sli:
             volume_plugin: "kubernetes.io/csi.+"
             operation_name: ".+"
+      ingress:
+        canary:
+          enabled: true
+          objective: 99.9
+
 
     specs: {}
 
