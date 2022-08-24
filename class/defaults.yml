@@ -34,7 +34,7 @@ parameters:
       ingress:
         canary:
           enabled: true
-          objective: 99.9
+          objective: 99.75
 
 
     specs: {}
