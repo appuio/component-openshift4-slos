@@ -1,0 +1,205 @@
+= Ingress SLOs
+
+include::partial$runbooks/contribution_note.adoc[]
+
+[[canary]]
+== Cluster Ingress Canary
+
+=== icon:glasses[] Overview
+
+This SLI measures the percentage of failed probes to an ingress canary application.
+If this SL= results in an alert, it means the cluster ingress controller is unable to handle some of or all of the incoming HTTP requests.
+
+The diagram below visualizes the ingress canary probe architecture.
+
+
+[ditaa]
+....
+                           +---------------------------------+
+                           | infra 1                         |
+                           |  /-------\         /-------\    |
+                    /-------->|       |         |       |    |
+                  /-|-------->|Ingress|---+---->|Canary |    |
+                  | |      |  |       |   |     |       |    |
+   +---------+    | |      |  \-------/   |     \-------/    |
+   | lb 1    |    | |      |              |                  |
+   |         |    | |      +--------------|------------------+
+   |         |    | |                     |
+/->|         | ---+ |      +--------------|------------------+
+|  |         |    | |      | infra 2      |                  |
+|  |         |    | |      |  /-------\   |     /-------\    |
+|  +---------+    \-|-------->|       |   |     |       |    |
+|                   +-------->|Ingress|---+---->|Canary |    |
+|                   |      |  |       |   |     |       |    |
+|  +---------+      |      |  \-------/   |     \-------/    |
+|  | lb 2    |      |      |              |                  |
+|  |         |      |      +--------------|------------------+
+|  |         |      |                     |
++->|         |------/      +------------+ | +----------------+
+\-------------------\      | master     | | | worker         |
+   |         |      |      | /--------\ | | |   /-------\    |
+   +---------+      |      | |        | | | |   |       |    |
+                    \---=----|Operator| | \---->|Canary |    |
+                           | |        | |   |   |       |    |
+                           | \--------/ |   |   \-------/    |
+                           |            |   |                |
+                           +------------+   +----------------+
+
+....
+
+There is a simple canary target running on every worker and infrastructure node.
+Every minute the ingress operator sends a probe to the external address of the canary target.
+This means it will send a request to the public floating IP of the load balancers, which will forward the request to one of the ingress controller running on the infrastructure nodes, which will then forward the request to one of the canary targets.
+
+Any of these steps might fail and lead to a failed canary probe.
+
+
+There are two types of alerts that fire if we expect to miss the configured objective.
+
+* A ticket alert means that the error rate is slightly higher than the objective.
+If we don't intervene at some point after receiving this alert, we can expect to miss the objective.
+However no immediate, urgent action is necessary.
+A ticket alert should have a label `severity: warning`.
+* A page alert means that the error rate is significantly higher than the objective.
+Immediate action is necessary to not miss the objective.
+A page alert should have a label `severity: critical` and should page on-call.
+
+
+=== icon:bug[] Steps for debugging
+
+Probe failures can have multiple reasons and the impact of this alert might vary.
+There are generally four possible causes for this failure:
+
+* *Load Balancer Failure*: There might be an issue with the load balancer VMs or its floating IP.
+This can include issues with inbound or outbound connections.
+* *Overlay Network Failure*: There might be an issue with the overlay network.
+In this case you probably see a lot of other issues.
+* *Ingress Controller Failure*: The ingress controller might have failed.
+* *Canary Target Failure*: The issue might also just be that the canary targets aren't available.
+In this case this isn't really an issue with the cluster ingress.
+
+Given that the cluster was able to send this alert, a complete outage of the load balancers or the overlay network is unlikely.
+Here are a few first steps you can do to narrow down the issue.
+
+First try to reproduce that you can't reach the canary endpoint yourself.
+Open the canary URL `canary-openshift-ingress-canary.$APP_DOMAIN` from your browser.
+
+If this works reliably, the issue is most likely outbound network traffic or a miss-configured ingress operator.
+Check the ingress operator logs and try to reproduce the issue by making an http request form the operator pod.
+
+If it works, but unreliably this is most likely an issue with the load balancers or ingress controller.
+One plausible cause would be if one of them ran into a connection limit.
+Check the logs of both the ingress controller and HAproxy on the load balancers.
+
+Next, if you reproduced the canary endpoint issue, try to connect to another exposed route.
+A good first start is to try to connect to the OpenShift console.
+If you're able to open it, this isn't a complete outage.
+It might just be that the canary targets are unavailable.
+There should be a daemonset running in namespace `openshift-ingress-canary`.
+
+NOTE: If the cluster ingress is down, the standard way to authenticate to OpenShift won't work either.
+Get the admin kubeconfig from the password manager.
+
+If you are unable to connect to any exposed routes, try to connect to the cluster using `kubectl`.
+If this doesn't work either, this is most likely an issue with the load balancer VMs.
+Connect to the VMs using SSH and check if they're able to reach the cluster nodes.
+Then check if HAproxy is running and check its logs.
+Also check if the floating IP was assigned correctly and that keepalived is working.
+
+If you're able to connect to the cluster, but no route is accessible, check if the ingress controller is running.
+If it does check its logs for any error.
+
+
+NOTE: We don't have a lot of experience with this alert yet.
+If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
+
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 99.25% and disable the page alert.
+This means this SLO won't alert on-call anymore.
+
+[source,yaml]
+----
+slos:
+  ingress:
+    canary:
+      objective: 99.25
+      alerting:
+        page_alert:
+          enabled: false
+
+----
+
+WARNING: Diabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
+Only disable SLOs if they're not relevant, not if the alerts are noisy.
+
+
+[NOTE]
+====
+If you adjust the objective please be aware how this will impact alerting.
+
+The ingress operator unconditionally sends one probe per minute.
+This means with the default SLO of `99.75%`, if 11 probes fail in a day, we will emit a ticket alert and if 3 probes fail in an hour we will emit a page alert.
+
+If you adjust the objective, these number will change and increasing the SLO might result in unactionable alerts.
+You can consult the table below, how changing the objective impacts alerting.
+
+[%header,cols="1,^2,^2"]
+|===
+|SLO
+|Failures per hour until page
+|Failures per day until ticket
+
+
+|99.9%
+|1
+|5
+
+|99.8%
+|2
+|9
+
+|*99.75%*
+|*3*
+|*11*
+
+|99.7%
+|3
+|13
+
+|99.6%
+|4
+|18
+
+|99.5%
+|5
+|22
+
+|99.4%
+|6
+|26
+
+|99.3%
+|7
+|31
+
+|99.2%
+|7
+|35
+
+|99.1%
+|8
+|39
+
+|99%
+|9
+|44
+
+|===
+====
