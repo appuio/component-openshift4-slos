@@ -82,7 +82,7 @@ Given that the cluster was able to send this alert, a complete outage of the loa
 Here are a few first steps you can do to narrow down the issue.
 
 First try to reproduce that you can't reach the canary endpoint yourself.
-Open the canary URL `canary-openshift-ingress-canary.$APP_DOMAIN` from your browser.
+Open the canary URL from your browser, the URL should be present as an annotation on the alert.
 
 If this works reliably, the issue is most likely outbound network traffic or a miss-configured ingress operator.
 Check the ingress operator logs and try to reproduce the issue by making an http request form the operator pod.

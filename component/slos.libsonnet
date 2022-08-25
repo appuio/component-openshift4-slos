@@ -35,6 +35,9 @@ local defaultSlos = {
   },
   ingress: {
     local config = params.slos.ingress,
+    local os = com.getValueOrDefault(inv.parameters, 'openshift', {}),
+    local appsDomain = com.getValueOrDefault(os, 'appsDomain', ''),
+
     sloth_input: {
       version: 'prometheus/v1',
       service: 'ingress',
@@ -50,6 +53,7 @@ local defaultSlos = {
             name: 'ClusterIngressFailure',
             annotations: {
               summary: 'Probes to ingress canary fail',
+              [if appsDomain != '' then 'canary_url']: 'canary-openshift-ingress-canary.%s' % appsDomain,
             },
             page_alert: {},
             ticket_alert: {},

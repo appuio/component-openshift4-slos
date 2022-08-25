@@ -139,6 +139,7 @@ spec:
       rules:
         - alert: ClusterIngressFailure
           annotations:
+            canary_url: canary-openshift-ingress-canary.apps.foo.example.com
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/ingress.html#canary
             summary: Probes to ingress canary fail
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
@@ -159,6 +160,7 @@ spec:
             syn_component: openshift4-slos
         - alert: ClusterIngressFailure
           annotations:
+            canary_url: canary-openshift-ingress-canary.apps.foo.example.com
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/ingress.html#canary
             summary: Probes to ingress canary fail
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
