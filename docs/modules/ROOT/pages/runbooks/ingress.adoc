@@ -53,17 +53,7 @@ This means it will send a request to the public floating IP of the load balancer
 
 Any of these steps might fail and lead to a failed canary probe.
 
-
-There are two types of alerts that fire if we expect to miss the configured objective.
-
-* A ticket alert means that the error rate is slightly higher than the objective.
-If we don't intervene at some point after receiving this alert, we can expect to miss the objective.
-However no immediate, urgent action is necessary.
-A ticket alert should have a label `severity: warning`.
-* A page alert means that the error rate is significantly higher than the objective.
-Immediate action is necessary to not miss the objective.
-A page alert should have a label `severity: critical` and should page on-call.
-
+include::partial$runbooks/alert_types.adoc[]
 
 === icon:bug[] Steps for debugging
 
@@ -109,10 +99,7 @@ Also check if the floating IP was assigned correctly and that keepalived is work
 If you're able to connect to the cluster, but no route is accessible, check if the ingress controller is running.
 If it does check its logs for any error.
 
-
-NOTE: We don't have a lot of experience with this alert yet.
-If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
-
+include::partial$runbooks/wip_note.adoc[]
 
 === icon:wrench[] Tune
 
@@ -136,9 +123,7 @@ slos:
 
 ----
 
-WARNING: Diabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
-Only disable SLOs if they're not relevant, not if the alerts are noisy.
-
+include::partial$runbooks/objective_change_warning.adoc[]
 
 [NOTE]
 ====

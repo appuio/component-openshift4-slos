@@ -10,15 +10,7 @@ include::partial$runbooks/contribution_note.adoc[]
 This SLO measures the percentage of failed storage operations, reported by kubelets and the controller-manager.
 The error rate is a general indicator of the health of the storage provider, but might not show you the root cause of the issue.
 
-There are two types of alerts that fire if we expect to miss the configured SLO objective.
-
-* A ticket alert means that the error rate is slightly higher than the objective.
-If we don't intervene at some point after receiving this alert, we can expect to miss the objective.
-However no immediate, urgent action is necessary.
-A ticket alert should have a label `severity: warning`.
-* A page alert means that the error rate is significantly higher than the objective.
-Immediate action is necessary to not miss the objective.
-A page alert should have a label `severity: critical` and should page on-call.
+include::partial$runbooks/alert_types.adoc[]
 
 === icon:bug[] Steps for debugging
 
@@ -46,9 +38,7 @@ For all other operations the kubelet might log more information.
 This should give you a starting point to investigate the root cause.
 You should also check if there are other, related firing alerts and create/delete a test PVC to properly assess the impact of this alert.
 
-NOTE: We don't have a lot of experience with this alert yet.
-If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
-
+include::partial$runbooks/wip_note.adoc[]
 
 === icon:wrench[] Tune
 
@@ -74,5 +64,4 @@ slos:
 
 ----
 
-WARNING: Diabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
-Only disable SLOs if they're not relevant, not if the alerts are noisy.
+include::partial$runbooks/objective_change_warning.adoc[]
