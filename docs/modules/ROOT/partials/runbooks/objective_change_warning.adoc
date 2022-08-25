@@ -1,0 +1,2 @@
+WARNING: Disabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
+Only disable SLOs if they're not relevant, not if the alerts are noisy.
