@@ -1,6 +1,8 @@
 # Overwrite parameters here
 
 parameters:
+  openshift:
+    appsDomain: apps.foo.example.com
   openshift4_slos:
     specs:
       appuio-ch-http-get-availability:

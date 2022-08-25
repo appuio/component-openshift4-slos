@@ -33,6 +33,35 @@ local defaultSlos = {
       },
     },
   },
+  ingress: {
+    local config = params.slos.ingress,
+    local os = com.getValueOrDefault(inv.parameters, 'openshift', {}),
+    local appsDomain = com.getValueOrDefault(os, 'appsDomain', ''),
+
+    sloth_input: {
+      version: 'prometheus/v1',
+      service: 'ingress',
+      _slos: {
+        canary: {
+          description: 'OpenShift ingress SLO based on canary availability',
+          sli: {
+            raw: {
+              error_ratio_query: '1 - avg_over_time(ingress_canary_route_reachable[{{.window}}])',
+            },
+          },
+          alerting: {
+            name: 'ClusterIngressFailure',
+            annotations: {
+              summary: 'Probes to ingress canary fail',
+              [if appsDomain != '' then 'canary_url']: 'canary-openshift-ingress-canary.%s' % appsDomain,
+            },
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config.canary,
+      },
+    },
+  },
 };
 
 local patchSLO(slo) =
