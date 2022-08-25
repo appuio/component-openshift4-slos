@@ -8,7 +8,7 @@ include::partial$runbooks/contribution_note.adoc[]
 === icon:glasses[] Overview
 
 This SLI measures the percentage of failed probes to an ingress canary application.
-If this SL= results in an alert, it means the cluster ingress controller is unable to handle some of or all of the incoming HTTP requests.
+If this SLI results in an alert, it means the cluster ingress controller is unable to handle some of or all of the incoming HTTP requests.
 
 The diagram below visualizes the ingress canary probe architecture.
 
