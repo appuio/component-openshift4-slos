@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eu
+
+# Wrapper around kustomize since kapitan expects absolute paths for system binaries.
+
+kustomize=$(which kustomize)
+
+export PATH
+
+exec "$kustomize" "$@"
