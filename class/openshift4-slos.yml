@@ -6,28 +6,6 @@ parameters:
         input_type: jsonnet
         output_path: apps/
 
-      - input_type: external
-        input_paths:
-          - /bin/mkdir
-        args:
-          - -p
-          - \${compiled_target_dir}/scheduler-canary
-        output_path: .
-      - input_paths:
-          - ${_base_directory}/component/scheduler-canary.jsonnet
-        input_type: jsonnet
-        output_path: ${_base_directory}/scheduler-canary
-        output_type: yaml
-      - input_type: external
-        input_paths:
-          - openshift4-slos/run-kustomize
-        output_path: .
-        args:
-          - build
-          - ${_base_directory}/scheduler-canary
-          - -o
-          - \${compiled_target_dir}/scheduler-canary
-
       - input_paths:
           - ${_base_directory}/component/sloth-input.jsonnet
         input_type: jsonnet
@@ -63,6 +41,5 @@ parameters:
       - input_paths:
           - ${_base_directory}/sloth-input
           - ${_base_directory}/sloth-output
-          - ${_base_directory}/scheduler-canary
         input_type: remove
         output_path: .

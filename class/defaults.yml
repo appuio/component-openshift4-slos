@@ -13,14 +13,6 @@ parameters:
         registry: docker.io
         image: prom/blackbox-exporter
         tag: v0.22.0
-      canary_scheduler_controller:
-        registry: quay.io
-        image: appuio/scheduler-canary-controller
-        tag: v0.0.1-dev
-
-    canary_scheduler_controller:
-      enabled: true
-      kustomize_input: {}
 
     alerting:
       labels:
