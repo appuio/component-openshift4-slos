@@ -3,4 +3,5 @@
 
 * SLO Runbooks
 ** xref:runbooks/storage.adoc[Storage SLOs]
+** xref:runbooks/ingress.adoc[Ingress SLOs]
 
