@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: scheduler-canary-proxy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: scheduler-canary-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: scheduler-canary-controller-manager
+  namespace: appuio-openshift4-slos
