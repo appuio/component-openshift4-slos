@@ -29,16 +29,18 @@ The entry in `images` allows Renovate to create version upgrade PRs.
 The Sloth version can be overridden by the `tag` parameter.
 
 == `slos`
+
 [horizontal]
 type:: dictionary
 
 The configuration option of all default SLOs for the APPUiO Managed OpenShift product.
 
 === `slos.storage.csi-operations`
+
 [horizontal]
 type:: dictionary
 default::
-
++
 [source,yaml]
 ----
 csi-operations:
@@ -59,6 +61,28 @@ The fields can contain an arbitrary https://prometheus.io/docs/prometheus/latest
 Any additional field is added directly to the `slo` input for sloth.
 
 NOTE: Look at xref:runbooks/storage.adoc#csi-operations[the runbook] for an explanation of this SLO.
+
+=== `slos.workload_schedulability.canary`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+workload_schedulability:
+  canary:
+    enabled: true
+    objective: 99.75
+----
+
+The configuration for the canary based workload schedulability SLO.
+
+The SLO can be disabled by setting `enabled` to false.
+
+Any additional field is added directly to the `slo` input for sloth.
+
+NOTE: Look at xref:runbooks/workload-schedulability.adoc#canary[the runbook] for an explanation of this SLO.
 
 == `alerting`
 

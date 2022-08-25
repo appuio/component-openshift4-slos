@@ -1,0 +1,101 @@
+= Workload Schedulability SLOs
+
+include::partial$runbooks/contribution_note.adoc[]
+
+[[canary]]
+== Workload Canary
+
+=== icon:glasses[] Overview
+
+This SLO measures the percentage of pods timed out during the scheduling phase, measured while waiting for a canary pods.
+The error rate is a general indicator of cluster and workload health.
+
+There are two types of alerts that fire if we expect to miss the configured SLO objective.
+
+* A ticket alert means that the error rate is slightly higher than the objective.
+If we don't intervene at some point after receiving this alert, we can expect to miss the objective.
+However no immediate, urgent action is necessary.
+A ticket alert should have a label `severity: warning`.
+* A page alert means that the error rate is significantly higher than the objective.
+Immediate action is necessary to not miss the objective.
+A page alert should have a label `severity: critical` and should page on-call.
+
+=== icon:bug[] Steps for debugging
+
+Unschedulable workloads often indicate resource exhaustion on a cluster but can have many root causes.
+
+First check the `Events:` section of the `kubectl describe` output.
+
+[source,bash]
+----
+kubectl describe pods -A -l "scheduler-canary-controller.appuio.io/instance"
+----
+
+The output should contain events why the pod is not schedulable:
+
+[source]
+----
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  46s (x1 over 56s)  default-scheduler  0/12 nodes are available: 3 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 3 node(s) had taint {storagenode: True}, that the pod didn't tolerate, 6 Insufficient cpu, 6 Insufficient memory.
+
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  12s (x1 over 15s)  default-scheduler  0/12 nodes are available: 3 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 3 node(s) had taint {storagenode: True}, that the pod didn't tolerate, 6 Too many pods.
+----
+
+Allocatable resources can be checked with the `kubectl describe nodes` output.
+
+[source,bash]
+----
+kubectl --as=cluster-admin describe nodes -l node-role.kubernetes.io/app=
+[...]
+Allocatable:
+  cpu:                3500m
+  ephemeral-storage:  123201474766
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             15258372Ki
+  pods:               110
+[...]
+Non-terminated Pods:                      (38 in total)
+[...]
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests      Limits
+  --------           --------      ------
+  cpu                2644m (75%)   5420m (154%)
+  memory             5914Mi (39%)  14076Mi (94%)
+  ephemeral-storage  100Ki (0%)    0 (0%)
+  hugepages-1Gi      0 (0%)        0 (0%)
+  hugepages-2Mi      0 (0%)        0 (0%)
+----
+
+NOTE: We don't have a lot of experience with this alert yet.
+If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 99.25% and disable the page alert.
+This means this SLO won't alert on-call anymore.
+
+[source,yaml]
+----
+slos:
+  workload_schedulability:
+    canary:
+      objective: 99.25
+      alerting:
+        page_alert:
+          enabled: false
+----
+
+WARNING: Disabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
+Only disable SLOs if they're not relevant, not if the alerts are noisy.
