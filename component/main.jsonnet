@@ -3,6 +3,7 @@ local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 
+local blackbox = import 'blackbox-exporter.libsonnet';
 local slo = import 'slos.libsonnet';
 
 local inv = kap.inventory();
@@ -14,7 +15,7 @@ local params = inv.parameters.openshift4_slos;
 local mergeSpec = function(name, spec)
   local slothRendered = std.parseJson(kap.yaml_load('%s/sloth-output/%s.yaml' % [ inv.parameters._base_directory, name ]));
   local metadata = com.makeMergeable(std.get(spec, 'metadata', {}));
-  kube._Object('monitoring.coreos.com/v1', 'PrometheusRule', name) {
+  kube._Object('monitoring.coreos.com/v1', 'PrometheusRule', kube.hyphenate(name)) {
     metadata+: metadata,
     spec: slothRendered,
   }
@@ -22,21 +23,6 @@ local mergeSpec = function(name, spec)
 
 local rules = std.mapWithKey(mergeSpec, slo.Specs);
 
-local probes = com.generateResources(
-  params.blackbox_exporter.probes,
-  function(name) kube._Object('monitoring.coreos.com/v1', 'Probe', name) {
-    metadata+: {
-      namespace: params.blackbox_exporter.namespace,
-    },
-    spec+: {
-      prober+: {
-        url: '%s.%s.svc:9115' % [ params.blackbox_exporter.name, params.blackbox_exporter.namespace ],
-        scheme: 'http',
-        path: '/probe',
-      },
-    },
-  }
-);
 
 local canaryImageStream = kube._Object('image.openshift.io/v1', 'ImageStream', 'canary') {
   local upstreamImage = params.images.canary,
@@ -106,9 +92,9 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
       },
     },
   },
-  '20_probes': probes,
   '30_canaryImageStream': canaryImageStream,
   '30_canary': canary,
 }
-+ (import 'blackbox-exporter.libsonnet')
++ blackbox.deployment
++ blackbox.probes
 + rules

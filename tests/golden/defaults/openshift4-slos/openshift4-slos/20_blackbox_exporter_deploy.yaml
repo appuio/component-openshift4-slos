@@ -26,7 +26,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: f9549db9064c29961e29525a5096f645
+        checksum/config: a9adc40f8d8d85b4c56c9d7d160b483b
       labels:
         app.kubernetes.io/component: openshift4-slos
         app.kubernetes.io/instance: prometheus-blackbox-exporter

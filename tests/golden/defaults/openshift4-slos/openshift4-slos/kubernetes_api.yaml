@@ -1,0 +1,395 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    name: kubernetes-api
+  name: kubernetes-api
+spec:
+  groups:
+    - name: sloth-slo-sli-recordings-kubernetes_api-canary
+      rules:
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[5m])/count_over_time(up{job="probe-k8s-api"}[5m])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[30m])/count_over_time(up{job="probe-k8s-api"}[30m])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[1h])/count_over_time(up{job="probe-k8s-api"}[1h])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[2h])/count_over_time(up{job="probe-k8s-api"}[2h])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[6h])/count_over_time(up{job="probe-k8s-api"}[6h])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[1d])/count_over_time(up{job="probe-k8s-api"}[1d])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: (1 - (sum_over_time(probe_success{job="probe-k8s-api"}[3d])/count_over_time(up{job="probe-k8s-api"}[3d])))
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: 'sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="kubernetes_api-canary",
+            sloth_service="kubernetes_api", sloth_slo="canary"}[30d])
+
+            / ignoring (sloth_window)
+
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="kubernetes_api-canary",
+            sloth_service="kubernetes_api", sloth_slo="canary"}[30d])
+
+            '
+          labels:
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-kubernetes_api-canary
+      rules:
+        - expr: vector(0.9990000000000001)
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+          record: slo:objective:ratio
+        - expr: vector(1-0.9990000000000001)
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+          record: slo:time_period:days
+        - expr: 'slo:sli_error:ratio_rate5m{sloth_id="kubernetes_api-canary", sloth_service="kubernetes_api",
+            sloth_slo="canary"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="kubernetes_api-canary", sloth_service="kubernetes_api",
+            sloth_slo="canary"}
+
+            '
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+          record: slo:current_burn_rate:ratio
+        - expr: 'slo:sli_error:ratio_rate30d{sloth_id="kubernetes_api-canary", sloth_service="kubernetes_api",
+            sloth_slo="canary"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="kubernetes_api-canary", sloth_service="kubernetes_api",
+            sloth_slo="canary"}
+
+            '
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="kubernetes_api-canary", sloth_service="kubernetes_api",
+            sloth_slo="canary"}
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            sloth_id: kubernetes_api-canary
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99.9'
+            sloth_service: kubernetes_api
+            sloth_slo: canary
+            sloth_spec: prometheus/v1
+            sloth_version: v0.10.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-kubernetes_api-canary
+      rules:
+        - alert: KubeApiServeFailure
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#canary
+            summary: Probes to Kubernetes API server fail
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (14.4 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
+            kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            canary\"} > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
+            (\n    (slo:sli_error:ratio_rate30m{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (6 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            canary\"} > (6 * 0.0009999999999999432))\n)\n"
+          labels:
+            severity: critical
+            sloth_severity: page
+            syn: 'true'
+            syn_component: openshift4-slos
+        - alert: KubeApiServeFailure
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#canary
+            summary: Probes to Kubernetes API server fail
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (3 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
+            kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            canary\"} > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
+            (\n    (slo:sli_error:ratio_rate6h{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (1 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
+            kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            canary\"} > (1 * 0.0009999999999999432))\n)\n"
+          labels:
+            severity: warning
+            sloth_severity: ticket
+            syn: 'true'
+            syn_component: openshift4-slos
+    - name: sloth-slo-sli-recordings-kubernetes_api-requests
+      rules:
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[5m])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[5m])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[30m])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[30m])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[1h])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[1h])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[2h])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[2h])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[6h])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[6h])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[1d])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[1d])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: '(sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"kube-apiserver"}[3d])))
+
+            /
+
+            (sum(rate(apiserver_request_total{apiserver=~"kube-apiserver"}[3d])))
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: 'sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="kubernetes_api-requests",
+            sloth_service="kubernetes_api", sloth_slo="requests"}[30d])
+
+            / ignoring (sloth_window)
+
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="kubernetes_api-requests",
+            sloth_service="kubernetes_api", sloth_slo="requests"}[30d])
+
+            '
+          labels:
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-kubernetes_api-requests
+      rules:
+        - expr: vector(0.9990000000000001)
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+          record: slo:objective:ratio
+        - expr: vector(1-0.9990000000000001)
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+          record: slo:time_period:days
+        - expr: 'slo:sli_error:ratio_rate5m{sloth_id="kubernetes_api-requests", sloth_service="kubernetes_api",
+            sloth_slo="requests"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="kubernetes_api-requests", sloth_service="kubernetes_api",
+            sloth_slo="requests"}
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+          record: slo:current_burn_rate:ratio
+        - expr: 'slo:sli_error:ratio_rate30d{sloth_id="kubernetes_api-requests", sloth_service="kubernetes_api",
+            sloth_slo="requests"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="kubernetes_api-requests", sloth_service="kubernetes_api",
+            sloth_slo="requests"}
+
+            '
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="kubernetes_api-requests",
+            sloth_service="kubernetes_api", sloth_slo="requests"}
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            sloth_id: kubernetes_api-requests
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99.9'
+            sloth_service: kubernetes_api
+            sloth_slo: requests
+            sloth_spec: prometheus/v1
+            sloth_version: v0.10.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-kubernetes_api-requests
+      rules:
+        - alert: KubeApiServerHighErrorRate
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#requests
+            summary: High Kubernetes API server error rate
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (14.4 *\
+            \ 0.0009999999999999432))\n    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
+            kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            requests\"} > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
+            (\n    (slo:sli_error:ratio_rate30m{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (6 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            requests\"} > (6 * 0.0009999999999999432))\n)\n"
+          labels:
+            severity: critical
+            sloth_severity: page
+            syn: 'true'
+            syn_component: openshift4-slos
+        - alert: KubeApiServerHighErrorRate
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#requests
+            summary: High Kubernetes API server error rate
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (3 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
+            kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            requests\"} > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
+            (\n    (slo:sli_error:ratio_rate6h{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (1 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
+            kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
+            requests\"} > (1 * 0.0009999999999999432))\n)\n"
+          labels:
+            severity: warning
+            sloth_severity: ticket
+            syn: 'true'
+            syn_component: openshift4-slos
