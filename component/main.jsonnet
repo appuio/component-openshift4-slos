@@ -69,9 +69,7 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
     interval: '1m',
     maxPodCompletionTimeout: '3m',
     podTemplate: {
-      metadata: {
-        labels: {},
-      },
+      metadata: {},
       spec: {
         containers: [
           {

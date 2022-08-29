@@ -10,8 +10,7 @@ spec:
   interval: 1m
   maxPodCompletionTimeout: 3m
   podTemplate:
-    metadata:
-      labels: {}
+    metadata: {}
     spec:
       containers:
         - args:
