@@ -85,3 +85,10 @@ parameters:
       manifests_version: ${openshift4_slos:images:canary_scheduler_controller:tag}
       kustomize_input:
         namespace: ${openshift4_slos:namespace}
+        patches:
+          - patch: |-
+              $patch: delete
+              apiVersion: v1
+              kind: Namespace
+              metadata:
+                name: appuio-scheduler-canary
