@@ -13,6 +13,10 @@ parameters:
         registry: docker.io
         image: prom/blackbox-exporter
         tag: v0.22.0
+      canary_scheduler_controller:
+        registry: quay.io
+        image: appuio/scheduler-canary-controller
+        tag: v0.0.1-dev
 
     alerting:
       labels:
@@ -75,3 +79,9 @@ parameters:
             prober: tcp
             tcp:
               preferred_ip_protocol: ip4
+
+    canary_scheduler_controller:
+      enabled: true
+      manifests_version: ${openshift4_slos:images:canary_scheduler_controller:tag}
+      kustomize_input:
+        namespace: ${openshift4_slos:namespace}
