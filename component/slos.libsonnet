@@ -11,15 +11,15 @@ local defaultSlos = {
     local config = params.slos['workload-schedulability'],
     sloth_input: {
       version: 'prometheus/v1',
-      service: 'ingress',
+      service: 'workload-schedulability',
       _slos: {
         [if config.canary.enabled then 'canary']: {
           description: 'OpenShift workload schedulability SLO based on github.com/appuio/scheduler-canary-controller canary',
           sli: {
             events: {
               local queryParams = { namespace: params.namespace },
-              error_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="%(namespace)s",reason="timed_out"}[{{.window}}]))' % queryParams,
-              total_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
+              error_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="%(namespace)s",reason="timed_out"}[{{.window}}]))' % queryParams,
+              total_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
             },
           },
           alerting: {
