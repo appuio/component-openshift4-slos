@@ -16,9 +16,9 @@ local defaultSlos = {
         [if config.canary.enabled then 'canary']: {
           description: 'OpenShift workload schedulability SLO based on github.com/appuio/scheduler-canary-controller canary',
           sli: {
-            events:{
+            events: {
               error_query: 'sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[{{.window}}]))',
-              total_query: 'sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[{{.window}}]))'
+              total_query: 'sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[{{.window}}]))',
             },
           },
           alerting: {

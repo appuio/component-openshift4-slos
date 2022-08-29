@@ -31,7 +31,7 @@ First check the `Events:` section of the `kubectl describe` output.
 kubectl describe pods -A -l "scheduler-canary-controller.appuio.io/instance"
 ----
 
-The output should contain events why the pod is not schedulable:
+The output should contain events why the pod isn't schedulable:
 
 [source]
 ----
