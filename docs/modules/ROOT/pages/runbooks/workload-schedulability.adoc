@@ -89,7 +89,7 @@ This means this SLO won't alert on-call anymore.
 [source,yaml]
 ----
 slos:
-  workload_schedulability:
+  workload-schedulability:
     canary:
       objective: 99.25
       alerting:

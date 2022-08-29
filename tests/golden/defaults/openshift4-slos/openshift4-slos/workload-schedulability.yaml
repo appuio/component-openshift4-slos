@@ -3,8 +3,8 @@ kind: PrometheusRule
 metadata:
   annotations: {}
   labels:
-    name: workload_schedulability
-  name: workload_schedulability
+    name: workload-schedulability
+  name: workload-schedulability
 spec:
   groups:
     - name: sloth-slo-sli-recordings-ingress-canary
@@ -181,7 +181,7 @@ spec:
       rules:
         - alert: CanaryWorkloadTimesOut
           annotations:
-            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/workload_schedulability.html#canary
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/workload-schedulability.html#canary
             summary: Canary workloads time out.
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
@@ -201,7 +201,7 @@ spec:
             syn_component: openshift4-slos
         - alert: CanaryWorkloadTimesOut
           annotations:
-            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/workload_schedulability.html#canary
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/workload-schedulability.html#canary
             summary: Canary workloads time out.
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.

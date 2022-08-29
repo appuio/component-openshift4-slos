@@ -32,7 +32,7 @@ parameters:
         severity: warning
 
     slos:
-      workload_schedulability:
+      workload-schedulability:
         canary:
           enabled: true
           objective: 99.75

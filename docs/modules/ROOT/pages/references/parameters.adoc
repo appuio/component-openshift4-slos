@@ -62,7 +62,7 @@ Any additional field is added directly to the `slo` input for sloth.
 
 NOTE: Look at xref:runbooks/storage.adoc#csi-operations[the runbook] for an explanation of this SLO.
 
-=== `slos.workload_schedulability.canary`
+=== `slos.workload-schedulability.canary`
 
 [horizontal]
 type:: dictionary
@@ -70,7 +70,7 @@ default::
 +
 [source,yaml]
 ----
-workload_schedulability:
+workload-schedulability:
   canary:
     enabled: true
     objective: 99.75

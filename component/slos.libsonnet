@@ -7,8 +7,8 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift4_slos;
 
 local defaultSlos = {
-  workload_schedulability: {
-    local config = params.slos.workload_schedulability,
+  'workload-schedulability': {
+    local config = params.slos['workload-schedulability'],
     sloth_input: {
       version: 'prometheus/v1',
       service: 'ingress',
