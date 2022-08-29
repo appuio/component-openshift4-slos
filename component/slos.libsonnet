@@ -17,14 +17,15 @@ local defaultSlos = {
           description: 'OpenShift workload schedulability SLO based on github.com/appuio/scheduler-canary-controller canary',
           sli: {
             events: {
-              error_query: 'sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[{{.window}}]))',
-              total_query: 'sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[{{.window}}]))',
+              local queryParams = { namespace: params.namespace },
+              error_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="%(namespace)s",reason="timed_out"}[{{.window}}]))' % queryParams,
+              total_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
             },
           },
           alerting: {
-            name: 'ClusterWorkloadE2ESchedulerLatencyHigh',
+            name: 'CanaryWorkloadTimesOut',
             annotations: {
-              summary: 'Workload scheduler latency is high',
+              summary: 'Canary workloads time out.',
             },
             page_alert: {},
             ticket_alert: {},

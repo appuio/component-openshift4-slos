@@ -9,11 +9,11 @@ spec:
   groups:
     - name: sloth-slo-sli-recordings-ingress-canary
       rules:
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[5m])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[5m])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[5m])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[5m])))
 
             '
           labels:
@@ -22,11 +22,11 @@ spec:
             sloth_slo: canary
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[30m])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[30m])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[30m])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[30m])))
 
             '
           labels:
@@ -35,11 +35,11 @@ spec:
             sloth_slo: canary
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[1h])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[1h])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[1h])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[1h])))
 
             '
           labels:
@@ -48,11 +48,11 @@ spec:
             sloth_slo: canary
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[2h])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[2h])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[2h])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[2h])))
 
             '
           labels:
@@ -61,11 +61,11 @@ spec:
             sloth_slo: canary
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[6h])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[6h])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[6h])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[6h])))
 
             '
           labels:
@@ -74,11 +74,11 @@ spec:
             sloth_slo: canary
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[1d])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[1d])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[1d])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[1d])))
 
             '
           labels:
@@ -87,11 +87,11 @@ spec:
             sloth_slo: canary
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
-        - expr: '(sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count{reason="timed_out"}[3d])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[3d])))
 
             /
 
-            (sum by (exported_namespace,name) (rate(scheduler_canary_pod_until_waiting_seconds_count[3d])))
+            (sum by (name) (rate(scheduler_canary_pods_completed_seconds{exported_namespace="appuio-openshift4-slos"}[3d])))
 
             '
           labels:
@@ -179,10 +179,10 @@ spec:
           record: sloth_slo_info
     - name: sloth-slo-alerts-ingress-canary
       rules:
-        - alert: ClusterWorkloadE2ESchedulerLatencyHigh
+        - alert: CanaryWorkloadTimesOut
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/workload_schedulability.html#canary
-            summary: Workload scheduler latency is high
+            summary: Canary workloads time out.
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
           expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"ingress-canary\", sloth_service=\"\
@@ -199,10 +199,10 @@ spec:
             sloth_severity: page
             syn: 'true'
             syn_component: openshift4-slos
-        - alert: ClusterWorkloadE2ESchedulerLatencyHigh
+        - alert: CanaryWorkloadTimesOut
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/workload_schedulability.html#canary
-            summary: Workload scheduler latency is high
+            summary: Canary workloads time out.
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
           expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"ingress-canary\", sloth_service=\"\

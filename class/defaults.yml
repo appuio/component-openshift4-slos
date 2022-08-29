@@ -17,6 +17,10 @@ parameters:
         registry: quay.io
         image: appuio/scheduler-canary-controller
         tag: v0.0.1-dev
+      canary:
+        registry: docker.io
+        image: curlimages/curl
+        tag: "7.84.0"
 
     alerting:
       labels:

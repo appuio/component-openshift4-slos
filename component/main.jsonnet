@@ -38,6 +38,67 @@ local probes = com.generateResources(
   }
 );
 
+local canaryImageStream = kube._Object('image.openshift.io/v1', 'ImageStream', 'canary') {
+  local upstreamImage = params.images.canary,
+  metadata+: {
+    namespace: params.namespace,
+  },
+  spec+: {
+    tags: [
+      {
+        annotations: null,
+        from: {
+          kind: 'DockerImage',
+          name: '%(registry)s/%(image)s:%(tag)s' % upstreamImage,
+        },
+        importPolicy: {},
+        name: 'latest',
+        referencePolicy: {
+          type: 'Local',
+        },
+      },
+    ],
+  },
+};
+
+local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', 'canary') {
+  metadata+: {
+    namespace: params.namespace,
+  },
+  spec: {
+    interval: '1m',
+    maxPodCompletionTimeout: '3m',
+    podTemplate: {
+      metadata: {
+        labels: {},
+      },
+      spec: {
+        containers: [
+          {
+            command: [
+              'sh',
+              '-c',
+            ],
+            args: [
+              'date',
+            ],
+            image: 'image-registry.openshift-image-registry.svc:5000/%s/%s:latest' % [ canaryImageStream.metadata.namespace, canaryImageStream.metadata.name ],
+            imagePullPolicy: 'Always',
+            name: 'date',
+            resources: {},
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+          },
+        ],
+        restartPolicy: 'Never',
+        schedulerName: 'default-scheduler',
+        securityContext: {},
+        terminationGracePeriodSeconds: 10,
+      },
+    },
+  },
+};
+
 {
   '00_namespace': kube.Namespace(params.namespace) {
     metadata+: {
@@ -47,6 +108,8 @@ local probes = com.generateResources(
     },
   },
   '20_probes': probes,
+  '30_canaryImageStream': canaryImageStream,
+  '30_canary': canary,
 }
 + (import 'blackbox-exporter.libsonnet')
 + rules
