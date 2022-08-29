@@ -7,7 +7,7 @@ include::partial$runbooks/contribution_note.adoc[]
 
 === icon:glasses[] Overview
 
-This SLO measures the percentage of pods timed out during the scheduling phase, measured while waiting for a canary pods.
+This SLO measures the percentage of pods timed out during a complete lifecycle, measured while waiting for a canary pods.
 The error rate is a general indicator of cluster and workload health.
 
 There are two types of alerts that fire if we expect to miss the configured SLO objective.
@@ -46,6 +46,11 @@ Events:
   Warning  FailedScheduling  12s (x1 over 15s)  default-scheduler  0/12 nodes are available: 3 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 3 node(s) had taint {storagenode: True}, that the pod didn't tolerate, 6 Too many pods.
 ----
 
+NOTE: We don't have a lot of experience with this alert yet.
+If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
+
+==== Resource Exhaustion
+
 Allocatable resources can be checked with the `kubectl describe nodes` output.
 
 [source,bash]
@@ -73,8 +78,33 @@ Allocated resources:
   hugepages-2Mi      0 (0%)        0 (0%)
 ----
 
-NOTE: We don't have a lot of experience with this alert yet.
-If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
+==== `ImagePullBackOff`
+
+The canary pod uses an image from the OpenShift registry.
+If the registry is unavailable, the pod will fail to start.
+
+Check the `Status:` section of the `kubectl describe` output:
+
+[source,bash]
+----
+kubectl -n appuio-openshift4-slos describe imagestream canary
+----
+
+Check if pods are crashing for the image registry:
+
+[source,bash]
+----
+kubectl -n openshift-image-registry get pods
+----
+
+Check the logs for the operator and the registry:
+
+[source,bash]
+----
+kubectl -n openshift-image-registry logs deployments/cluster-image-registry-operator
+
+kubectl -n openshift-image-registry logs deployments/image-registry --all-containers
+----
 
 === icon:wrench[] Tune
 
