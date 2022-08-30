@@ -10,15 +10,7 @@ include::partial$runbooks/contribution_note.adoc[]
 This SLO measures the percentage of pods timed out during a complete lifecycle, measured while waiting for a canary pods.
 The error rate is a general indicator of cluster and workload health.
 
-There are two types of alerts that fire if we expect to miss the configured SLO objective.
-
-* A ticket alert means that the error rate is slightly higher than the objective.
-If we don't intervene at some point after receiving this alert, we can expect to miss the objective.
-However no immediate, urgent action is necessary.
-A ticket alert should have a label `severity: warning`.
-* A page alert means that the error rate is significantly higher than the objective.
-Immediate action is necessary to not miss the objective.
-A page alert should have a label `severity: critical` and should page on-call.
+include::partial$runbooks/alert_types.adoc[]
 
 === icon:bug[] Steps for debugging
 
@@ -46,8 +38,7 @@ Events:
   Warning  FailedScheduling  12s (x1 over 15s)  default-scheduler  0/12 nodes are available: 3 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 3 node(s) had taint {storagenode: True}, that the pod didn't tolerate, 6 Too many pods.
 ----
 
-NOTE: We don't have a lot of experience with this alert yet.
-If you had to debug this alert, please consider adding any insight, tips, or code snippets you gained to this runbook.
+include::partial$runbooks/wip_note.adoc[]
 
 ==== Resource Exhaustion
 
@@ -127,5 +118,4 @@ slos:
           enabled: false
 ----
 
-WARNING: Disabling the SLO or changing the objective will also impact the SLO dashboard and SLA reporting.
-Only disable SLOs if they're not relevant, not if the alerts are noisy.
+include::partial$runbooks/objective_change_warning.adoc[]
