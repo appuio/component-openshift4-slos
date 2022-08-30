@@ -17,6 +17,10 @@ parameters:
         registry: quay.io
         image: appuio/scheduler-canary-controller
         tag: v0.0.1-dev
+      canary:
+        registry: docker.io
+        image: curlimages/curl
+        tag: "7.84.0"
 
     alerting:
       labels:
@@ -28,6 +32,14 @@ parameters:
         severity: warning
 
     slos:
+      workload-schedulability:
+        canary:
+          enabled: true
+          objective: 99.75
+          _sli:
+            podStartInterval: 1m
+            overallPodTimeout: 3m
+
       storage:
         csi-operations:
           enabled: true

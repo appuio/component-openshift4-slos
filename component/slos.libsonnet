@@ -7,6 +7,34 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift4_slos;
 
 local defaultSlos = {
+  'workload-schedulability': {
+    local config = params.slos['workload-schedulability'],
+    sloth_input: {
+      version: 'prometheus/v1',
+      service: 'workload-schedulability',
+      _slos: {
+        [if config.canary.enabled then 'canary']: {
+          description: 'OpenShift workload schedulability SLO based on github.com/appuio/scheduler-canary-controller canary',
+          sli: {
+            events: {
+              local queryParams = { namespace: params.namespace },
+              error_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="%(namespace)s",reason="timed_out"}[{{.window}}]))' % queryParams,
+              total_query: 'sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
+            },
+          },
+          alerting: {
+            name: 'CanaryWorkloadTimesOut',
+            annotations: {
+              summary: 'Canary workloads time out.',
+            },
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config.canary,
+      },
+    },
+  },
+
   storage: {
     local config = params.slos.storage,
     sloth_input: {

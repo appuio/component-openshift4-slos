@@ -1,0 +1,30 @@
+apiVersion: monitoring.appuio.io/v1beta1
+kind: SchedulerCanary
+metadata:
+  annotations: {}
+  labels:
+    name: canary
+  name: canary
+  namespace: appuio-openshift4-slos
+spec:
+  interval: 1m
+  maxPodCompletionTimeout: 3m
+  podTemplate:
+    metadata: {}
+    spec:
+      containers:
+        - args:
+            - date
+          command:
+            - sh
+            - -c
+          image: image-registry.openshift-image-registry.svc:5000/appuio-openshift4-slos/canary:latest
+          imagePullPolicy: Always
+          name: date
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 10

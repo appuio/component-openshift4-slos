@@ -16,7 +16,7 @@ parameters:
           - /bin/mkdir
         args:
           - -p
-          - \${compiled_target_dir}/scheduler-canary
+          - \${compiled_target_dir}/${_instance}/scheduler-canary-deployment
         output_path: .
       - input_type: external
         input_paths:
@@ -26,7 +26,7 @@ parameters:
           - build
           - ${_base_directory}/scheduler-canary
           - -o
-          - \${compiled_target_dir}/scheduler-canary
+          - \${compiled_target_dir}/${_instance}/scheduler-canary-deployment
 
       - input_paths:
           - ${_base_directory}/component/sloth-input.jsonnet
