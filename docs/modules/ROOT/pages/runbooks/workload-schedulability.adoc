@@ -8,6 +8,8 @@ include::partial$runbooks/contribution_note.adoc[]
 === icon:glasses[] Overview
 
 This SLO measures the percentage of pods timed out during a complete lifecycle, measured while waiting for a canary pods.
+In the current implementation the image for the pod is pulled from the built-in OpenShift registry.
+
 The error rate is a general indicator of cluster and workload health.
 
 include::partial$runbooks/alert_types.adoc[]
@@ -15,6 +17,7 @@ include::partial$runbooks/alert_types.adoc[]
 === icon:bug[] Steps for debugging
 
 Unschedulable workloads often indicate resource exhaustion on a cluster but can have many root causes.
+Since the canary pod uses an image from the built-in OpenShift registry, the alert can be triggered by a misbehaving image registry.
 
 First check the `Events:` section of the `kubectl describe` output.
 
@@ -36,6 +39,17 @@ Events:
   Type     Reason            Age                From               Message
   ----     ------            ----               ----               -------
   Warning  FailedScheduling  12s (x1 over 15s)  default-scheduler  0/12 nodes are available: 3 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 3 node(s) had taint {storagenode: True}, that the pod didn't tolerate, 6 Too many pods.
+
+Events:
+  Type     Reason          Age   From               Message
+  ----     ------          ----  ----               -------
+  Warning  Failed          13s   kubelet            Failed to pull image "invalid:image": rpc error: code = Unknown desc = reading manifest image in docker.io/library/invalid: errors:
+denied: requested access to the resource is denied
+unauthorized: authentication required
+  Warning  Failed   13s               kubelet  Error: ErrImagePull
+  Normal   BackOff  12s               kubelet  Back-off pulling image "invalid:image"
+  Warning  Failed   12s               kubelet  Error: ImagePullBackOff
+  Normal   Pulling  0s (x2 over 15s)  kubelet  Pulling image "invalid:image"
 ----
 
 include::partial$runbooks/wip_note.adoc[]
