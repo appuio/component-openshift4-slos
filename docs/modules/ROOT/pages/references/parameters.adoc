@@ -74,11 +74,17 @@ workload-schedulability:
   canary:
     enabled: true
     objective: 99.75
+    _sli:
+      podStartInterval: 1m
+      overallPodTimeout: 3m
 ----
 
 The configuration for the canary based workload schedulability SLO.
 
 The SLO can be disabled by setting `enabled` to false.
+
+You can configure the interval canary pods are created (`podStartInterval`) and the timeout until a pod is seen as stuck (`overallPodTimeout`).
+Both parameters are in https://pkg.go.dev/time#ParseDuration[Go duration format] (for example `1m30s`).
 
 Any additional field is added directly to the `slo` input for sloth.
 

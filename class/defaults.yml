@@ -36,6 +36,9 @@ parameters:
         canary:
           enabled: true
           objective: 99.75
+          _sli:
+            podStartInterval: 1m
+            overallPodTimeout: 3m
 
       storage:
         csi-operations:

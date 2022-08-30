@@ -66,8 +66,9 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
     namespace: params.namespace,
   },
   spec: {
-    interval: '1m',
-    maxPodCompletionTimeout: '3m',
+    local sliConfig = params.slos['workload-schedulability'].canary._sli,
+    interval: sliConfig.podStartInterval,
+    maxPodCompletionTimeout: sliConfig.overallPodTimeout,
     podTemplate: {
       metadata: {},
       spec: {

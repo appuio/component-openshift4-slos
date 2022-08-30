@@ -118,7 +118,7 @@ If this alert isn't actionable, noisy, or was raised too late you may want to tu
 You have the option tune the SLO through the component parameters.
 You can modify the objective, disable the page or ticket alert, or completely disable the SLO.
 
-The example below will set the SLO set the objective to 99.25% and disable the page alert.
+The example below will set the SLO set the objective to 99.25%, adjust the time until a pod is seen as timed out, and disable the page alert.
 This means this SLO won't alert on-call anymore.
 
 [source,yaml]
@@ -130,6 +130,8 @@ slos:
       alerting:
         page_alert:
           enabled: false
+      _sli:
+        overallPodTimeout: 5m
 ----
 
 include::partial$runbooks/objective_change_warning.adoc[]
