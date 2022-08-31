@@ -20,7 +20,7 @@ parameters:
       canary:
         registry: docker.io
         image: curlimages/curl
-        tag: "7.84.0"
+        tag: "7.85.0"
 
     alerting:
       labels:
