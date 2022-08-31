@@ -9,11 +9,11 @@ spec:
   groups:
     - name: sloth-slo-sli-recordings-workload-schedulability-canary
       rules:
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[5m])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[5m])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[5m])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[5m])))
 
             '
           labels:
@@ -22,11 +22,11 @@ spec:
             sloth_slo: canary
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[30m])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[30m])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[30m])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[30m])))
 
             '
           labels:
@@ -35,11 +35,11 @@ spec:
             sloth_slo: canary
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[1h])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[1h])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[1h])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[1h])))
 
             '
           labels:
@@ -48,11 +48,11 @@ spec:
             sloth_slo: canary
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[2h])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[2h])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[2h])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[2h])))
 
             '
           labels:
@@ -61,11 +61,11 @@ spec:
             sloth_slo: canary
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[6h])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[6h])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[6h])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[6h])))
 
             '
           labels:
@@ -74,11 +74,11 @@ spec:
             sloth_slo: canary
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[1d])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[1d])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[1d])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[1d])))
 
             '
           labels:
@@ -87,11 +87,11 @@ spec:
             sloth_slo: canary
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
-        - expr: '(sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[3d])))
+        - expr: '(sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos",reason="timed_out"}[3d])))
 
             /
 
-            (sum by (name) (rate(scheduler_canary_pods_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[3d])))
+            (sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="appuio-openshift4-slos"}[3d])))
 
             '
           labels:
