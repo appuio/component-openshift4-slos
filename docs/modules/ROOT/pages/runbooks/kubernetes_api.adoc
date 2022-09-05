@@ -16,10 +16,10 @@ include::partial$runbooks/alert_types.adoc[]
 
 A high Kubernetes API server error rate can have multiple root causes.
 First check if you are generally able to connect the cluter's API through `kubectl`.
-If you can't, you most likely also received a `KubeApiServerFailure` and it probably makes sense to also look at its runbook even if you didn't.
+If you can't, you most likely also received a `KubeApiServerFailure` and it makes sense to also look at its runbook even if the alert didn't trigger.
 
 If you can still access the API server, look at the pods running in namespace `openshift-kube-apiserver`.
-Check if any of the API server pods seem to be crashing and ceck their logs.
+Check if any of the API server pods seem to be crashing and check their logs.
 Also check etcd running in namespace `openshift-etcd` and see if any pods are crashing or logging errors.
 
 NOTE: If you have issues with viewing logs through `kubectl`, but the cluster generally still works, you might be able to look at the logs in elasticsearch.
@@ -38,7 +38,7 @@ With these you should be able to narrow down the issue:
 In that case, double-check if one or more master nodes have a high load.
 If so either investigate what generates the high load or increase master nodes size.
 
-* If you have a large amount of `504` errors, an upstream service is miss-behaving.
+* If you have a large amount of `504` errors, an upstream service is misbehaving.
 Check etcd or the OpenShift API server in namespace `openshift-apiserver`.
 
 * If you see other codes than the generic `500`, check online what this error code means.
@@ -133,7 +133,7 @@ ssh -J "${LB_HOST}" -i ssh_key "core@${MASTER_NODE}"
 ----
 
 Check the logs in `/var/log/etcd`, `/var/log/kube-apiserver`, and `/var/log/containers`.
-Also see if any systemd service as crashed.
+Also see if any systemd service has crashed.
 
 
 include::partial$runbooks/wip_note.adoc[]
