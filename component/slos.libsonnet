@@ -121,7 +121,7 @@ local defaultSlos = {
             },
           },
           alerting: {
-            name: 'KubeApiServeFailure',
+            name: 'KubeApiServerFailure',
             annotations: {
               summary: 'Probes to Kubernetes API server fail',
             },

@@ -62,6 +62,60 @@ Any additional field is added directly to the `slo` input for sloth.
 
 NOTE: Look at xref:runbooks/storage.adoc#csi-operations[the runbook] for an explanation of this SLO.
 
+=== `slos.kubernetes_api.requests`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+requests:
+  enabled: true
+  objective: 99.9
+  _sli:
+    apiserver: "kube-apiserver"
+----
+
+The configuration for the kubernetes API requests SLO.
+
+The SLO can be disabled by setting `enabled` to false.
+
+You can configure which API servers are actually considered for the SLO by setting `_sli.apiserver`.
+By default the SLO only consideres the Kubernetes API server and not the OpenShift API server.
+The field can contain an arbitrary https://prometheus.io/docs/prometheus/latest/querying/basics/#instant-vector-selectors[PromQL regex label matcher].
+
+Any additional field is added directly to the `slo` input for sloth.
+
+NOTE: Look at xref:runbooks/kubernetes_api.adoc#requests[the runbook] for an explanation of this SLO.
+
+=== `slos.kubernetes_api.canary`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+canary:
+  enabled: true
+  objective: 99.9
+  _sli:
+    interval: 10s
+    timeout: 5s
+----
+
+The configuration for the kubernetes API canary SLO.
+
+The SLO can be disabled by setting `enabled` to false.
+
+You can configure the probe interval and timeout by setting `_sli.interval` and `_sli.probe` respectively.
+Both parameters are in https://pkg.go.dev/time#ParseDuration[Go duration format] (for example `1m30s`).
+
+Any additional field is added directly to the `slo` input for sloth.
+
+NOTE: Look at xref:runbooks/kubernetes_api.adoc#canary[the runbook] for an explanation of this SLO.
+
 === `slos.workload-schedulability.canary`
 
 [horizontal]

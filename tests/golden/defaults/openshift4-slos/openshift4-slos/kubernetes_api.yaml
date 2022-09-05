@@ -137,7 +137,7 @@ spec:
           record: sloth_slo_info
     - name: sloth-slo-alerts-kubernetes_api-canary
       rules:
-        - alert: KubeApiServeFailure
+        - alert: KubeApiServerFailure
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#canary
             summary: Probes to Kubernetes API server fail
@@ -158,7 +158,7 @@ spec:
             sloth_severity: page
             syn: 'true'
             syn_component: openshift4-slos
-        - alert: KubeApiServeFailure
+        - alert: KubeApiServerFailure
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#canary
             summary: Probes to Kubernetes API server fail
