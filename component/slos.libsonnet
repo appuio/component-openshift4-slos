@@ -90,6 +90,48 @@ local defaultSlos = {
       },
     },
   },
+  kubernetes_api: {
+    local config = params.slos.kubernetes_api,
+    sloth_input: {
+      version: 'prometheus/v1',
+      service: 'kubernetes_api',
+      _slos: {
+        requests: {
+          description: 'Kubernetes API Server SLO based on failed requests',
+          sli: {
+            events: {
+              error_query: 'sum(rate(apiserver_request_total{code=~"(5..|429)",apiserver=~"%s"}[{{.window}}]))' % [ config.requests._sli.apiserver ],
+              total_query: 'sum(rate(apiserver_request_total{apiserver=~"%s"}[{{.window}}]))' % [ config.requests._sli.apiserver ],
+            },
+          },
+          alerting: {
+            name: 'KubeApiServerHighErrorRate',
+            annotations: {
+              summary: 'High Kubernetes API server error rate',
+            },
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config.requests,
+        canary: {
+          description: 'Kubernetes API Server SLO based on canary probes',
+          sli: {
+            raw: {
+              error_ratio_query: '1 - (sum_over_time(probe_success{job="probe-k8s-api"}[{{.window}}])/count_over_time(up{job="probe-k8s-api"}[{{.window}}]))',
+            },
+          },
+          alerting: {
+            name: 'KubeApiServerFailure',
+            annotations: {
+              summary: 'Probes to Kubernetes API server fail',
+            },
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config.canary,
+      },
+    },
+  },
 };
 
 local patchSLO(slo) =

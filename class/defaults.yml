@@ -51,7 +51,18 @@ parameters:
         canary:
           enabled: true
           objective: 99.75
-
+      kubernetes_api:
+        requests:
+          enabled: true
+          objective: 99.9
+          _sli:
+            apiserver: "kube-apiserver"
+        canary:
+          enabled: true
+          objective: 99.9
+          _sli:
+            interval: 10s
+            timeout: 5s
 
     specs: {}
 

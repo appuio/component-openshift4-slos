@@ -6,6 +6,37 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
+local k8sAPICanary = params.slos.kubernetes_api.canary;
+local defaultModules = {
+  [if k8sAPICanary.enabled then 'http_kube_ca_2xx']: {
+    http: {
+      follow_redirects: true,
+      preferred_ip_protocol: 'ip4',
+      tls_config: {
+        ca_file: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
+      },
+      prober: 'http',
+      timeout: k8sAPICanary._sli.timeout,
+    },
+  },
+};
+local defaultProbes = {
+  [if k8sAPICanary.enabled then 'kube-api-server']: {
+    spec: {
+      jobName: 'probe-k8s-api',
+      interval: k8sAPICanary._sli.interval,
+      module: 'http_kube_ca_2xx',
+      targets: {
+        staticConfig: {
+          static: [
+            'https://kubernetes.default.svc.cluster.local/readyz',
+          ],
+        },
+      },
+    },
+  },
+};
+
 local matchLabels = {
   'app.kubernetes.io/instance': 'prometheus-blackbox-exporter',
   'app.kubernetes.io/name': params.blackbox_exporter.name,
@@ -16,7 +47,14 @@ local labels = matchLabels {
   'app.kubernetes.io/component': 'openshift4-slos',
 };
 
-local exporterConfig = std.manifestYamlDoc(params.blackbox_exporter.config, true, false);
+local exporterConfig = std.manifestYamlDoc(
+  {
+    modules: defaultModules,
+  }
+  + com.makeMergeable(params.blackbox_exporter.config),
+  true,
+  false
+);
 
 local sa =
   kube.ServiceAccount(params.blackbox_exporter.name) {
@@ -112,9 +150,30 @@ local service =
     target_pod:: deploy.spec.template,
   };
 
-if params.blackbox_exporter.enabled == true then {
-  '10_blackbox_exporter_sa': sa,
-  '20_blackbox_exporter_deploy': deploy,
-  '20_blackbox_exporter_configmap': configMap,
-  '20_blackbox_exporter_service': service,
-} else {}
+local probes = com.generateResources(
+  defaultProbes + params.blackbox_exporter.probes,
+  function(name) kube._Object('monitoring.coreos.com/v1', 'Probe', name) {
+    metadata+: {
+      namespace: params.blackbox_exporter.namespace,
+    },
+    spec+: {
+      prober+: {
+        url: '%s.%s.svc:9115' % [ params.blackbox_exporter.name, params.blackbox_exporter.namespace ],
+        scheme: 'http',
+        path: '/probe',
+      },
+    },
+  }
+);
+
+{
+  deployment: if params.blackbox_exporter.enabled == true then {
+    '10_blackbox_exporter_sa': sa,
+    '20_blackbox_exporter_deploy': deploy,
+    '20_blackbox_exporter_configmap': configMap,
+    '20_blackbox_exporter_service': service,
+  } else {},
+  probes: if params.blackbox_exporter.enabled == true then {
+    '20_probes': probes,
+  } else {},
+}

@@ -1,0 +1,182 @@
+= Kubernetes API SLOs
+
+include::partial$runbooks/contribution_note.adoc[]
+
+[[requests]]
+== API Requests
+
+=== icon:glasses[] Overview
+
+This SLO measures the percentage of valid, well structured Kubernetes API requets that fail.
+The error rate is a general indicator of the health of the API server, but might not show you the root cause of the issue.
+
+include::partial$runbooks/alert_types.adoc[]
+
+=== icon:bug[] Steps for debugging
+
+A high Kubernetes API server error rate can have multiple root causes.
+First check if you are generally able to connect the cluter's API through `kubectl`.
+If you can't, you most likely also received a `KubeApiServerFailure` and it makes sense to also look at its runbook even if the alert didn't trigger.
+
+If you can still access the API server, look at the pods running in namespace `openshift-kube-apiserver`.
+Check if any of the API server pods seem to be crashing and check their logs.
+Also check etcd running in namespace `openshift-etcd` and see if any pods are crashing or logging errors.
+
+NOTE: If you have issues with viewing logs through `kubectl`, but the cluster generally still works, you might be able to look at the logs in elasticsearch.
+
+The API server logs can be fairly noisy, to help you narrow down the issue, you can connect to the Prometheus on the cluster and run the following query:
+
+[source,promql]
+----
+sum (rate(apiserver_request_total{code=~"(5..|429)"}[10m])) by (verb, resource, code)
+----
+
+This should return one or more time series.
+With these you should be able to narrow down the issue:
+
+* If all, or most, timeseries have the code `429` this most likely means the API server is overloaded.
+In that case, double-check if one or more master nodes have a high load.
+If so either investigate what generates the high load or increase master nodes size.
+
+* If you have a large amount of `504` errors, an upstream service is misbehaving.
+Check etcd or the OpenShift API server in namespace `openshift-apiserver`.
+
+* If you see other codes than the generic `500`, check online what this error code means.
+
+* Check which verbs are effected.
+For example, if all writes fail, this might indicate a degraded etcd cluster.
+
+* Check what resources are effected.
+For example, if only OpenShift resources are effected, there is most likely an issue with the OpenShift API server and not the Kubernetes API server.
+
+This should give you a starting point to investigate the root cause.
+You should also check if there are other, related firing alerts.
+
+include::partial$runbooks/wip_note.adoc[]
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 99.25% and disable the page alert.
+This means this SLO won't alert on-call anymore.
+
+[source,yaml]
+----
+slos:
+  kubernetes_api:
+    requests:
+      objective: 99.25
+      alerting:
+        page_alert:
+          enabled: false
+----
+
+include::partial$runbooks/objective_change_warning.adoc[]
+
+[[canary]]
+== API Uptime
+
+=== icon:glasses[] Overview
+
+This SLI measures the up-time of the Kubernetes API by probing the `/heathz` endpoint.
+If this SLI results in an alert, it means the Kubernetes API server is unable to handle requests or clients are simply unable to reach it.
+
+include::partial$runbooks/alert_types.adoc[]
+
+=== icon:bug[] Steps for debugging
+
+First try to access the Kubernetes API through `kubectl`.
+
+NOTE: If the API server is degraded, you might not be able to authenticate to OpenShift through the web console, but the API still might mostly work.
+Get the admin kubeconfig from the password manager and try to connect directly.
+
+If `kubectl` access still seems to work, try to check what error the probe is returning, by forwarding the blackbox exporter UI:
+
+[source,shell]
+----
+kubectl -n appuio-openshift4-slos port-forward svc/prometheus-blackbox-exporter 9115
+----
+
+You'll probably also want to follow the `KubeApiServerHighErrorRate` runbook.
+
+If you can't reach the Kubernetes API at all, fist check through the cloud provider portal if the master nodes are running.
+If they're running, but the Kubernetes API is still not reachable, try to connect to one of them using SSH.
+You'll need the SSH key stored in vault and use one of the LB VMs as a jumphost.
+
+[source,shell]
+----
+# For example: https://api.syn.vshn.net
+# IMPORTANT: do NOT add a trailing `/`. Commands below will fail.
+export COMMODORE_API_URL=<lieutenant-api-endpoint>
+
+# Set Project Syn cluster and tenant ID
+export CLUSTER_ID=<lieutenant-cluster-id> # Looks like: c-<something>
+export TENANT_ID=$(curl -sH "Authorization: Bearer $(commodore fetch-token)" ${COMMODORE_API_URL}/clusters/${CLUSTER_ID} | jq -r .tenant)
+
+# Login to vault
+export VAULT_ADDR=https://vault-prod.syn.vshn.net
+vault login -method=oidc
+
+# Fetch SSH key
+vault kv get -format=json clusters/kv/${TENANT_ID}/${CLUSTER_ID}/cloudscale/ssh \
+  | jq -r '.data.data.private_key' | base64 --decode > ssh_key
+chmod 400 ssh_key
+
+# Connect to master node
+MASTER_NODE=etcd-0
+LB_HOST=$(grep -E "^Host.*${CLUSTER_ID}" ~/.ssh/sshop_config | head -1 | awk '{print $2}')
+ssh -J "${LB_HOST}" -i ssh_key "core@${MASTER_NODE}"
+----
+
+Check the logs in `/var/log/etcd`, `/var/log/kube-apiserver`, and `/var/log/containers`.
+Also see if any systemd service has crashed.
+
+
+include::partial$runbooks/wip_note.adoc[]
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 99.25% and disable the page alert.
+This means this SLO won't alert on-call anymore.
+
+[source,yaml]
+----
+slos:
+  kubernetes_api:
+    canary:
+      objective: 99.9
+      _sli:
+        timeout: 10s
+        interval: 30s
+      alerting:
+        page_alert:
+          enabled: false
+
+----
+
+include::partial$runbooks/objective_change_warning.adoc[]
+
+[NOTE]
+====
+If you adjust the objective please be aware how this will impact alerting.
+
+With the default SLO of `99.9%` and probe interval of `10s`, if 6 probes fail in an hour we will emit a page alert.
+
+If you adjust the objective, this number will change and increasing the SLO or decreasing probe interval might result in unactionable alerts.
+You can calculate the number of failed probes latexmath:[f], given SLO latexmath:[slo] as percentage beteween 0 and 100 and the probe interval in seconds latexmath:[int].
+
+[latexmath]
+++++
+f = \dfrac{5164}{int} \left( 1-\dfrac{slo}{100} \right)
+++++
+
+====

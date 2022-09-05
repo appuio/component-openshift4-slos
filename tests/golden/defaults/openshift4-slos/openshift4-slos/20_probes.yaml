@@ -18,3 +18,24 @@ spec:
     staticConfig:
       static:
         - https://www.appuio.ch/
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  annotations: {}
+  labels:
+    name: kube-api-server
+  name: kube-api-server
+  namespace: appuio-openshift4-slos
+spec:
+  interval: 10s
+  jobName: probe-k8s-api
+  module: http_kube_ca_2xx
+  prober:
+    path: /probe
+    scheme: http
+    url: prometheus-blackbox-exporter.appuio-openshift4-slos.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - https://kubernetes.default.svc.cluster.local/readyz
