@@ -137,7 +137,7 @@ spec:
           record: sloth_slo_info
     - name: sloth-slo-alerts-kubernetes_api-canary
       rules:
-        - alert: KubeApiServerFailure
+        - alert: SLO_KubeApiServerFailure
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#canary
             summary: Probes to Kubernetes API server fail
@@ -155,10 +155,11 @@ spec:
             canary\"} > (6 * 0.0009999999999999432))\n)\n"
           labels:
             severity: critical
+            slo: 'true'
             sloth_severity: page
             syn: 'true'
             syn_component: openshift4-slos
-        - alert: KubeApiServerFailure
+        - alert: SLO_KubeApiServerFailure
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#canary
             summary: Probes to Kubernetes API server fail
@@ -176,6 +177,7 @@ spec:
             canary\"} > (1 * 0.0009999999999999432))\n)\n"
           labels:
             severity: warning
+            slo: 'true'
             sloth_severity: ticket
             syn: 'true'
             syn_component: openshift4-slos
@@ -351,7 +353,7 @@ spec:
           record: sloth_slo_info
     - name: sloth-slo-alerts-kubernetes_api-requests
       rules:
-        - alert: KubeApiServerHighErrorRate
+        - alert: SLO_KubeApiServerHighErrorRate
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#requests
             summary: High Kubernetes API server error rate
@@ -369,10 +371,11 @@ spec:
             requests\"} > (6 * 0.0009999999999999432))\n)\n"
           labels:
             severity: critical
+            slo: 'true'
             sloth_severity: page
             syn: 'true'
             syn_component: openshift4-slos
-        - alert: KubeApiServerHighErrorRate
+        - alert: SLO_KubeApiServerHighErrorRate
           annotations:
             runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/kubernetes_api.html#requests
             summary: High Kubernetes API server error rate
@@ -390,6 +393,7 @@ spec:
             requests\"} > (1 * 0.0009999999999999432))\n)\n"
           labels:
             severity: warning
+            slo: 'true'
             sloth_severity: ticket
             syn: 'true'
             syn_component: openshift4-slos

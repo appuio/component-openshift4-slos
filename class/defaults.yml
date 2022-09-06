@@ -26,6 +26,7 @@ parameters:
       labels:
         syn: "true"
         syn_component: "openshift4-slos"
+        slo: "true"
       page_labels:
         severity: critical
       ticket_labels:
