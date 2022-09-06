@@ -23,7 +23,7 @@ local defaultSlos = {
             },
           },
           alerting: {
-            name: 'CanaryWorkloadTimesOut',
+            name: 'SLO_CanaryWorkloadTimesOut',
             annotations: {
               summary: 'Canary workloads time out.',
             },
@@ -50,7 +50,7 @@ local defaultSlos = {
             },
           },
           alerting: {
-            name: 'StorageOperationHighErrorRate',
+            name: 'SLO_StorageOperationHighErrorRate',
             annotations: {
               summary: 'High storage operation error rate',
             },
@@ -78,7 +78,7 @@ local defaultSlos = {
             },
           },
           alerting: {
-            name: 'ClusterIngressFailure',
+            name: 'SLO_ClusterIngressFailure',
             annotations: {
               summary: 'Probes to ingress canary fail',
               [if appsDomain != '' then 'canary_url']: 'canary-openshift-ingress-canary.%s' % appsDomain,
@@ -105,7 +105,7 @@ local defaultSlos = {
             },
           },
           alerting: {
-            name: 'KubeApiServerHighErrorRate',
+            name: 'SLO_KubeApiServerHighErrorRate',
             annotations: {
               summary: 'High Kubernetes API server error rate',
             },
@@ -121,7 +121,7 @@ local defaultSlos = {
             },
           },
           alerting: {
-            name: 'KubeApiServerFailure',
+            name: 'SLO_KubeApiServerFailure',
             annotations: {
               summary: 'Probes to Kubernetes API server fail',
             },

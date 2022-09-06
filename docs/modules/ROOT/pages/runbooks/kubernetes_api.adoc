@@ -16,7 +16,7 @@ include::partial$runbooks/alert_types.adoc[]
 
 A high Kubernetes API server error rate can have multiple root causes.
 First check if you are generally able to connect the cluter's API through `kubectl`.
-If you can't, you most likely also received a `KubeApiServerFailure` and it makes sense to also look at its runbook even if the alert didn't trigger.
+If you can't, you most likely also received a `SLO_KubeApiServerFailure` and it makes sense to also look at its runbook even if the alert didn't trigger.
 
 If you can still access the API server, look at the pods running in namespace `openshift-kube-apiserver`.
 Check if any of the API server pods seem to be crashing and check their logs.
@@ -101,7 +101,7 @@ If `kubectl` access still seems to work, try to check what error the probe is re
 kubectl -n appuio-openshift4-slos port-forward svc/prometheus-blackbox-exporter 9115
 ----
 
-You'll probably also want to follow the `KubeApiServerHighErrorRate` runbook.
+You'll probably also want to follow the `SLO_KubeApiServerHighErrorRate` runbook.
 
 If you can't reach the Kubernetes API at all, fist check through the cloud provider portal if the master nodes are running.
 If they're running, but the Kubernetes API is still not reachable, try to connect to one of them using SSH.
