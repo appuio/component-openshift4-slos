@@ -21,6 +21,10 @@ parameters:
         registry: docker.io
         image: curlimages/curl
         tag: "7.85.0"
+      network_canary:
+        registry: ghcr.io
+        image: appuio/network-canary
+        tag: v0.1.0
 
     alerting:
       labels:
@@ -64,6 +68,10 @@ parameters:
           _sli:
             interval: 10s
             timeout: 5s
+      network:
+        canary:
+          enabled: true
+          objective: 99.9
 
     specs: {}
 
