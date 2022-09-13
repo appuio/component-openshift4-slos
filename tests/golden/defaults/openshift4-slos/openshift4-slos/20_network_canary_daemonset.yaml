@@ -5,7 +5,7 @@ metadata:
   labels:
     name: network-canary
   name: network-canary
-  namespace: appuio-openshift4-slos
+  namespace: appuio-network-canary
 spec:
   selector:
     matchLabels:
@@ -25,12 +25,18 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          image: ghcr.io/appuio/network-canary:v0.1.0
+          image: ghcr.io/appuio/network-canary:v0.1.1
           imagePullPolicy: IfNotPresent
           name: canary
           ports:
             - containerPort: 2112
               name: metrics
+          resources:
+            limits:
+              memory: 40Mi
+            requests:
+              cpu: 1m
+              memory: 20Mi
           stdin: false
           tty: false
           volumeMounts: []

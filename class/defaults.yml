@@ -112,6 +112,27 @@ parameters:
             tcp:
               preferred_ip_protocol: ip4
 
+    network_canary:
+      enabled: ${openshift4_slos:slos:network:canary:enabled}
+      namespace: appuio-network-canary
+      nodeselector: node-role.kubernetes.io/worker=
+      resources:
+        limits:
+          memory: 40Mi
+        requests:
+          cpu: 1m
+          memory: 20Mi
+
+      tolerations:
+        infrastructure:
+          effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        storage:
+          key: 'storagenode'
+          operator: 'Exists'
+
+
     canary_scheduler_controller:
       enabled: true
       manifests_version: ${openshift4_slos:images:canary_scheduler_controller:tag}

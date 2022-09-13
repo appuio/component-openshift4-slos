@@ -8,9 +8,20 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
+local ns = kube.Namespace(params.network_canary.namespace) {
+  metadata+: {
+    annotations+: {
+      'openshift.io/node-selector': params.network_canary.nodeselector,
+    },
+    labels+: {
+      'openshift.io/cluster-monitoring': 'true',
+    },
+  },
+};
+
 local ds = kube.DaemonSet('network-canary') {
   metadata+: {
-    namespace: params.namespace,
+    namespace: params.network_canary.namespace,
   },
   local image = params.images.network_canary,
   spec+: {
@@ -24,6 +35,7 @@ local ds = kube.DaemonSet('network-canary') {
               'ping-dns': 'network-canary',
             },
             args: [ '/canary' ] + super.args,
+            resources: params.network_canary.resources,
             env_+: {
               POD_IP: {
                 fieldRef: {
@@ -33,17 +45,7 @@ local ds = kube.DaemonSet('network-canary') {
             },
           },
         },
-        tolerations: [
-          {
-            effect: 'NoSchedule',
-            key: 'node-role.kubernetes.io/infra',
-            operator: 'Exists',
-          },
-          {
-            key: 'storagenode',
-            operator: 'Exists',
-          },
-        ],
+        tolerations: std.objectValues(params.network_canary.tolerations),
       },
     },
   },
@@ -51,7 +53,7 @@ local ds = kube.DaemonSet('network-canary') {
 
 local svc = kube.Service('network-canary') {
   metadata+: {
-    namespace: params.namespace,
+    namespace: params.network_canary.namespace,
   },
   target_pod: ds.spec.template,
   spec+: {
@@ -59,7 +61,24 @@ local svc = kube.Service('network-canary') {
   },
 };
 
+
+local sm = kube._Object('monitoring.coreos.com/v1', 'ServiceMonitor', 'network-canary') {
+  metadata+: {
+    namespace: params.network_canary.namespace,
+  },
+  spec+: {
+    endpoints: [ { port: 'metrics' } ],
+    selector: {
+      matchLabels: {
+        name: 'network-canary',
+      },
+    },
+  },
+};
+
 {
+  '10_network_canary_namespace': ns,
   '20_network_canary_daemonset': ds,
   '20_network_canary_service': svc,
+  '20_network_canary_servicemonitor': sm,
 }

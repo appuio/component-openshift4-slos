@@ -5,7 +5,7 @@ metadata:
   labels:
     name: network-canary
   name: network-canary
-  namespace: appuio-openshift4-slos
+  namespace: appuio-network-canary
 spec:
   clusterIP: None
   ports:

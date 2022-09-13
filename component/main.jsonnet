@@ -99,5 +99,5 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
 }
 + blackbox.deployment
 + blackbox.probes
-+ (if params.slos.network.canary.enabled then network_canary else {})
++ (if params.network_canary.enabled then network_canary else {})
 + rules
