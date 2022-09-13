@@ -1,0 +1,162 @@
+= Network SLOs
+
+include::partial$runbooks/contribution_note.adoc[]
+
+[[canary]]
+== Cluster Network Packet Loss
+
+=== icon:glasses[] Overview
+
+The SLI measures the percentage of dropped ICMP ping messages between canary pods on ever worker node.
+Every second on every worker node a canary pod pings canary pods on ever other worker node and reports the success as a Prometheus metric.
+
+If this SLI results in an alert, it means the some network packets between pods are lost.
+
+include::partial$runbooks/alert_types.adoc[]
+
+=== icon:bug[] Steps for debugging
+
+Packet loss can have multiple root causes and the impact of this alert might vary.
+Given that the cluster was able to send this alert, a complete outage of the network is unlikely.
+
+In any case, first try to connect to the affected cluster and to open the Prometheus UI.
+If that works successfully you can run the following query to see between which pods and nodes network packets are lost.
+
+[source, promql]
+----
+sum(rate(ping_rtt_seconds_count{reason="lost"}[5m])) by (target, source)
+* on (target) group_left(target_node)
+   label_replace(
+    label_replace(
+     max(kube_pod_info{pod_ip!~""}) by (pod_ip, node),
+    "target", "$1", "pod_ip", "(.+)"),
+   "target_node", "$1", "node", "(.+)")
+* on (source) group_left(source_node)
+   label_replace(
+    label_replace(
+     max(kube_pod_info{pod_ip!~""}) by (pod_ip, node),
+    "source", "$1", "pod_ip", "(.+)"),
+   "source_node", "$1", "node", "(.+)")
+> 0
+----
+
+This query should one or more time series, indicating packet loss between canary pods an which nodes they run on.
+From that you should be able to see which nodes are effected.
+If the target or source node is always the same, this is most likely an issue with that specific node, maybe it just crashed and this isn't a network issue after all.
+
+
+==== Replicate Issue
+
+If the issue isn't obvious, it's a good idea to first replicate the issue.
+
+First look at the logs of one of the source canary pods reporting packet loss.
+Find the relevant pod from the reported source IP.
+
+[source, shell]
+----
+kubectl -n appuio-network-canary get pod -o wide
+kubectl -n appuio-network-canary logs ${CANARY_POD}
+----
+
+In the logs you should be able to see if the issue is actually DNS related or if there is any other unexpected issues.
+If DNS isn't working properly, service discovery of the network canary won't work, which can lead to miss reported packet loss.
+
+If the canary doesn't log anything unusual, the next step is to reproduce the packet loss from within the pod.
+
+[source, shell]
+----
+kubectl --as cluster-admin -n appuio-network-canary debug -it -c debugger --image=ubuntu ${CANARY_POD}
+
+> apt update
+> apt install iputils-ping
+> ping ${TARGET_IP}
+----
+
+If you can't reproduce the packet loss, this might be a false alarm.
+Check if any other system is reporting network issues.
+If not this might just be a bug in the network canary.
+Please open https://github.com/appuio/network-canary/issues/new?assignees=&labels=bug&template=bug_report.yml[an issue on Github].
+
+
+
+
+==== Debug Node Issue
+
+Especially if a single node is affected, but also in other cases, it makes sense to connect to an affected node and try to reproduce the packet loss on a node to node level.
+
+Connect to one of the affected source node and ping a target node.
+
+[source, shell]
+----
+oc --as=cluster-admin -n syn-debug-nodes debug "node/${nodename}"
+
+> chroot /host
+> ping ${TARGET_NODE_IP}
+----
+
+If you're able to reproduce the packet loss between the nodes themselves, the issue is most likely with with the underlying host network or the host itself.
+
+If you can't reproduce it, there is probably an issue with the overlay network. If you're using Cilium, the https://docs.cilium.io/en/v1.12/operations/troubleshooting/[troubleshooting guide] might be a good next step. For ovn-kubernetes, check the logs of the ovnkube-master pods or follow the https://github.com/ovn-org/ovn-kubernetes/blob/master/docs/debugging.md[debugging steps] provided by ovn-kubernetes.
+
+
+==== Cluster inaccessible
+
+If you're unable to connect to the cluster first check if the cloud provider reports any issues.
+
+Next try to connect to the cluster using the admin credentials in the password manager.
+Direct access to the cluster API might still work, even if the console isn't accessible.
+
+If this doesn't work, try to connect to the loadbalancer VMs using SSH and check if they're able to reach the cluster nodes.
+In that case you should be able to connect to the cluster nodes using SSH via the loadbalancers.
+
+[source,shell]
+----
+# For example: https://api.syn.vshn.net
+# IMPORTANT: do NOT add a trailing `/`. Commands below will fail.
+export COMMODORE_API_URL=<lieutenant-api-endpoint>
+
+# Set Project Syn cluster and tenant ID
+export CLUSTER_ID=<lieutenant-cluster-id> # Looks like: c-<something>
+export TENANT_ID=$(curl -sH "Authorization: Bearer $(commodore fetch-token)" ${COMMODORE_API_URL}/clusters/${CLUSTER_ID} | jq -r .tenant)
+
+# Login to vault
+export VAULT_ADDR=https://vault-prod.syn.vshn.net
+vault login -method=oidc
+
+# Fetch SSH key
+vault kv get -format=json clusters/kv/${TENANT_ID}/${CLUSTER_ID}/cloudscale/ssh \
+  | jq -r '.data.data.private_key' | base64 --decode > ssh_key
+chmod 400 ssh_key
+
+# Connect to a cluster node
+NODE=etcd-0
+LB_HOST=$(grep -E "^Host.*${CLUSTER_ID}" ~/.ssh/sshop_config | head -1 | awk '{print $2}')
+ssh -J "${LB_HOST}" -i ssh_key "core@${NODE}"
+----
+
+
+include::partial$runbooks/wip_note.adoc[]
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 99.25% and disable the page alert.
+This means this SLO won't alert on-call anymore.
+
+[source,yaml]
+----
+slos:
+  network:
+    canary:
+      objective: 99.25
+      alerting:
+        page_alert:
+          enabled: false
+
+----
+
+include::partial$runbooks/objective_change_warning.adoc[]
