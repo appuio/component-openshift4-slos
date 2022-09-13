@@ -15,9 +15,9 @@ local defaultModules = {
       tls_config: {
         ca_file: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
       },
-      prober: 'http',
-      timeout: k8sAPICanary._sli.timeout,
     },
+    prober: 'http',
+    timeout: k8sAPICanary._sli.timeout,
   },
 };
 local defaultProbes = {
