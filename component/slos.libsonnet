@@ -132,6 +132,33 @@ local defaultSlos = {
       },
     },
   },
+
+  network: {
+    local config = params.slos.network,
+    sloth_input: {
+      version: 'prometheus/v1',
+      service: 'network',
+      _slos: {
+        requests: {
+          description: 'Kubernetes network SLO based on lost pings',
+          sli: {
+            events: {
+              error_query: 'sum(rate(ping_rtt_seconds_count{reason="lost"}[{{.window}}]))',
+              total_query: 'sum(rate(ping_rtt_seconds_count[{{.window}}]))',
+            },
+          },
+          alerting: {
+            name: 'SLO_NetworkPacketLossHigh',
+            annotations: {
+              summary: 'High number of lost network packets',
+            },
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config.canary,
+      },
+    },
+  },
 };
 
 local patchSLO(slo) =

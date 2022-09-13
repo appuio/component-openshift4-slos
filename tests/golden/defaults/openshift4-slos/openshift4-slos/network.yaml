@@ -1,0 +1,225 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    name: network
+  name: network
+spec:
+  groups:
+    - name: sloth-slo-sli-recordings-network-requests
+      rules:
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[5m])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[5m])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[30m])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[30m])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[1h])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[1h])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[2h])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[2h])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[6h])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[6h])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[1d])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[1d])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[3d])))
+
+            /
+
+            (sum(rate(ping_rtt_seconds_count[3d])))
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: 'sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="network-requests",
+            sloth_service="network", sloth_slo="requests"}[30d])
+
+            / ignoring (sloth_window)
+
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="network-requests",
+            sloth_service="network", sloth_slo="requests"}[30d])
+
+            '
+          labels:
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-network-requests
+      rules:
+        - expr: vector(0.9990000000000001)
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+          record: slo:objective:ratio
+        - expr: vector(1-0.9990000000000001)
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+          record: slo:time_period:days
+        - expr: 'slo:sli_error:ratio_rate5m{sloth_id="network-requests", sloth_service="network",
+            sloth_slo="requests"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="network-requests", sloth_service="network",
+            sloth_slo="requests"}
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+          record: slo:current_burn_rate:ratio
+        - expr: 'slo:sli_error:ratio_rate30d{sloth_id="network-requests", sloth_service="network",
+            sloth_slo="requests"}
+
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+
+            slo:error_budget:ratio{sloth_id="network-requests", sloth_service="network",
+            sloth_slo="requests"}
+
+            '
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="network-requests", sloth_service="network",
+            sloth_slo="requests"}
+          labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            sloth_id: network-requests
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99.9'
+            sloth_service: network
+            sloth_slo: requests
+            sloth_spec: prometheus/v1
+            sloth_version: v0.10.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-network-requests
+      rules:
+        - alert: SLO_NetworkPacketLossHigh
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/network.html#requests
+            summary: High number of lost network packets
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"network-requests\"\
+            , sloth_service=\"network\", sloth_slo=\"requests\"} > (14.4 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
+            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
+            } > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n\
+            \    (slo:sli_error:ratio_rate30m{sloth_id=\"network-requests\", sloth_service=\"\
+            network\", sloth_slo=\"requests\"} > (6 * 0.0009999999999999432))\n  \
+            \  and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
+            } > (6 * 0.0009999999999999432))\n)\n"
+          labels:
+            severity: critical
+            slo: 'true'
+            sloth_severity: page
+            syn: 'true'
+            syn_component: openshift4-slos
+        - alert: SLO_NetworkPacketLossHigh
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/network.html#requests
+            summary: High number of lost network packets
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"network-requests\"\
+            , sloth_service=\"network\", sloth_slo=\"requests\"} > (3 * 0.0009999999999999432))\n\
+            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
+            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
+            } > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n \
+            \   (slo:sli_error:ratio_rate6h{sloth_id=\"network-requests\", sloth_service=\"\
+            network\", sloth_slo=\"requests\"} > (1 * 0.0009999999999999432))\n  \
+            \  and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
+            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
+            } > (1 * 0.0009999999999999432))\n)\n"
+          labels:
+            severity: warning
+            slo: 'true'
+            sloth_severity: ticket
+            syn: 'true'
+            syn_component: openshift4-slos
