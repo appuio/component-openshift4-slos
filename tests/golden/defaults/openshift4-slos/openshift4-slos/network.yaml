@@ -114,13 +114,13 @@ spec:
           record: slo:sli_error:ratio_rate30d
     - name: sloth-slo-meta-recordings-network-requests
       rules:
-        - expr: vector(0.9990000000000001)
+        - expr: vector(0.9995)
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
           record: slo:objective:ratio
-        - expr: vector(1-0.9990000000000001)
+        - expr: vector(1-0.9995)
           labels:
             sloth_id: network-requests
             sloth_service: network
@@ -171,7 +171,7 @@ spec:
           labels:
             sloth_id: network-requests
             sloth_mode: cli-gen-prom
-            sloth_objective: '99.9'
+            sloth_objective: '99.95'
             sloth_service: network
             sloth_slo: requests
             sloth_spec: prometheus/v1
@@ -186,15 +186,15 @@ spec:
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
           expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"network-requests\"\
-            , sloth_service=\"network\", sloth_slo=\"requests\"} > (14.4 * 0.0009999999999999432))\n\
+            , sloth_service=\"network\", sloth_slo=\"requests\"} > (14.4 * 0.0004999999999999716))\n\
             \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n\
+            } > (14.4 * 0.0004999999999999716))\n)\nor ignoring (sloth_window)\n(\n\
             \    (slo:sli_error:ratio_rate30m{sloth_id=\"network-requests\", sloth_service=\"\
-            network\", sloth_slo=\"requests\"} > (6 * 0.0009999999999999432))\n  \
+            network\", sloth_slo=\"requests\"} > (6 * 0.0004999999999999716))\n  \
             \  and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (6 * 0.0009999999999999432))\n)\n"
+            } > (6 * 0.0004999999999999716))\n)\n"
           labels:
             severity: critical
             slo: 'true'
@@ -208,15 +208,15 @@ spec:
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
           expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"network-requests\"\
-            , sloth_service=\"network\", sloth_slo=\"requests\"} > (3 * 0.0009999999999999432))\n\
+            , sloth_service=\"network\", sloth_slo=\"requests\"} > (3 * 0.0004999999999999716))\n\
             \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n \
+            } > (3 * 0.0004999999999999716))\n)\nor ignoring (sloth_window)\n(\n \
             \   (slo:sli_error:ratio_rate6h{sloth_id=\"network-requests\", sloth_service=\"\
-            network\", sloth_slo=\"requests\"} > (1 * 0.0009999999999999432))\n  \
+            network\", sloth_slo=\"requests\"} > (1 * 0.0004999999999999716))\n  \
             \  and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (1 * 0.0009999999999999432))\n)\n"
+            } > (1 * 0.0004999999999999716))\n)\n"
           labels:
             severity: warning
             slo: 'true'
