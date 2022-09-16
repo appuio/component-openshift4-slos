@@ -11,7 +11,7 @@ spec:
     - annotations: null
       from:
         kind: DockerImage
-        name: docker.io/curlimages/curl:7.84.0
+        name: docker.io/curlimages/curl:7.85.0
       importPolicy: {}
       name: latest
       referencePolicy:
