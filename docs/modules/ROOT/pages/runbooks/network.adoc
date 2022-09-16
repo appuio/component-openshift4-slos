@@ -7,10 +7,10 @@ include::partial$runbooks/contribution_note.adoc[]
 
 === icon:glasses[] Overview
 
-The SLI measures the percentage of dropped ICMP ping messages between canary pods on ever worker node.
-Every second on every worker node a canary pod pings canary pods on ever other worker node and reports the success as a Prometheus metric.
+The SLI measures the percentage of dropped ICMP ping messages between canary pods on every worker node.
+Every second on each worker node a canary pod pings canary pods on every other worker node and reports the success as a Prometheus metric.
 
-If this SLI results in an alert, it means the some network packets between pods are lost.
+If this SLI results in an alert, it means that some network packets between pods are lost.
 
 include::partial$runbooks/alert_types.adoc[]
 
@@ -40,7 +40,7 @@ sum(rate(ping_rtt_seconds_count{reason="lost"}[5m])) by (target, source)
 > 0
 ----
 
-This query should one or more time series, indicating packet loss between canary pods an which nodes they run on.
+This query should return one or more time series, indicating packet loss between canary pods and which nodes they run on.
 From that you should be able to see which nodes are effected.
 If the target or source node is always the same, this is most likely an issue with that specific node, maybe it just crashed and this isn't a network issue after all.
 
@@ -58,8 +58,8 @@ kubectl -n appuio-network-canary get pod -o wide
 kubectl -n appuio-network-canary logs ${CANARY_POD}
 ----
 
-In the logs you should be able to see if the issue is actually DNS related or if there is any other unexpected issues.
-If DNS isn't working properly, service discovery of the network canary won't work, which can lead to miss reported packet loss.
+In the logs you should be able to see if the issue is actually DNS related or if there are any other unexpected issues.
+If DNS isn't working properly, service discovery of the network canary won't work, which can lead to misreported packet loss.
 
 If the canary doesn't log anything unusual, the next step is to reproduce the packet loss from within the pod.
 

@@ -470,7 +470,7 @@ resources:
     memory: 20Mi
 ----
 
-The resources requests and limits for the network canary.
+The resource requests and limits for the network canary.
 
 === `network_canary.tolerations`
 [horizontal]
@@ -490,7 +490,7 @@ tolerations:
 ----
 
 The tolerations for the network canary daemonset.
-The values of the dictionary will be used as is as tolerations.
+The values of the dictionary will be passed as is to the manifest.
 
 See the https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/[upstream documentation on taints and tolerations].
 
