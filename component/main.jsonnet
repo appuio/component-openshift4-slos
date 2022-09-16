@@ -6,6 +6,8 @@ local kube = import 'lib/kube.libjsonnet';
 local blackbox = import 'blackbox-exporter.libsonnet';
 local slo = import 'slos.libsonnet';
 
+local network_canary = import 'network-canary.libsonnet';
+
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
@@ -97,4 +99,5 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
 }
 + blackbox.deployment
 + blackbox.probes
++ (if params.network_canary.enabled then network_canary else {})
 + rules

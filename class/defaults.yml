@@ -21,6 +21,10 @@ parameters:
         registry: docker.io
         image: curlimages/curl
         tag: "7.85.0"
+      network_canary:
+        registry: ghcr.io
+        image: appuio/network-canary
+        tag: v0.1.1
 
     alerting:
       labels:
@@ -64,6 +68,10 @@ parameters:
           _sli:
             interval: 10s
             timeout: 5s
+      network:
+        canary:
+          enabled: true
+          objective: 99.5
 
     specs: {}
 
@@ -103,6 +111,27 @@ parameters:
             prober: tcp
             tcp:
               preferred_ip_protocol: ip4
+
+    network_canary:
+      enabled: ${openshift4_slos:slos:network:canary:enabled}
+      namespace: appuio-network-canary
+      nodeselector: node-role.kubernetes.io/worker=
+      resources:
+        limits:
+          memory: 40Mi
+        requests:
+          cpu: 1m
+          memory: 20Mi
+
+      tolerations:
+        infrastructure:
+          effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        storage:
+          key: 'storagenode'
+          operator: 'Exists'
+
 
     canary_scheduler_controller:
       enabled: true

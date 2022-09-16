@@ -144,6 +144,27 @@ Any additional field is added directly to the `slo` input for sloth.
 
 NOTE: Look at xref:runbooks/workload-schedulability.adoc#canary[the runbook] for an explanation of this SLO.
 
+=== `slos.network.canary`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+network:
+  canary:
+    enabled: true
+    objective: 99.95
+----
+
+The configuration for the canary based network SLO, measuring packet loss between nodes.
+
+The SLO can be disabled by setting `enabled` to false.
+Any additional field is added directly to the `slo` input for sloth.
+
+NOTE: Look at xref:runbooks/network.adoc#canary[the runbook] for an explanation of this SLO.
+
 == `alerting`
 
 [horizontal]
@@ -402,6 +423,76 @@ kustomize_input:
 The input passed to the Kustomize renderer.
 See https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/[The Kustomization File] for all available options.
 
+
+== `network_canary`
+[horizontal]
+type:: dictionary
+
+`network_canary` allows configuring the network canary used for measuring packet loss for network SLO.
+
+=== `network_canary.enabled`:
+[horizontal]
+type:: boolean
+default:: `${openshift4_slos:slos:network:canary:enabled}`
+
+Whether the canary should be deployed.
+By default the component will deploy the canary if and only if the network canary SLO is enabled.
+
+=== `network_canary.namespace`
+[horizontal]
+type:: string
+default:: `appuio-network-canary`
+
+In which namespace the network canary should be deployed.
+
+INFO: This needs to differ from the default SLO namespace so that we can choose different node selectors for the canary.
+
+=== `network_canary.nodeselector`
+[horizontal]
+type:: string
+default:: `node-role.kubernetes.io/worker=`
+
+On which nodes the canary should be deployed on.
+By default the network canary will run on all worker nodes.
+
+=== `network_canary.resources`
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+resources:
+  limits:
+    memory: 40Mi
+  requests:
+    cpu: 1m
+    memory: 20Mi
+----
+
+The resource requests and limits for the network canary.
+
+=== `network_canary.tolerations`
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+tolerations:
+  infrastructure:
+    effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  storage:
+    key: 'storagenode'
+    operator: 'Exists'
+----
+
+The tolerations for the network canary daemonset.
+The values of the dictionary will be passed as is to the manifest.
+
+See the https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/[upstream documentation on taints and tolerations].
 
 == Example
 

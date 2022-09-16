@@ -4,5 +4,6 @@
 * SLO Runbooks
 ** xref:runbooks/ingress.adoc[Ingress SLOs]
 ** xref:runbooks/kubernetes_api.adoc[Kubernetes API SLOs]
+** xref:runbooks/network.adoc[Network SLOs]
 ** xref:runbooks/workload-schedulability.adoc[Workload SLOs]
 ** xref:runbooks/storage.adoc[Storage SLOs]
