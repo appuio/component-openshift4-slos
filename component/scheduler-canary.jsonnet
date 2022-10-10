@@ -10,21 +10,22 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift4_slos;
 
 
-local kustomization = {
-  kustomization: {
-    resources: [
-      'https://github.com/appuio/scheduler-canary-controller//config/default?ref=%s' % params.canary_scheduler_controller.manifests_version,
-    ],
-    local image = params.images.canary_scheduler_controller,
-    images: [ {
-      name: 'quay.io/appuio/scheduler-canary-controller',
-      newTag: image.tag,
-      newName: '%s/%s' % [ image.registry, image.image ],
-    } ],
-  } + com.makeMergeable(params.canary_scheduler_controller.kustomize_input),
-};
+local kustomization =
+  if params.canary_scheduler_controller.enabled then
+    local image = params.images.canary_scheduler_controller;
+    com.Kustomization(
+      'https://github.com/appuio/scheduler-canary-controller//config/default',
+      params.canary_scheduler_controller.manifests_version,
+      {
+        'quay.io/appuio/scheduler-canary-controller': {
+          newTag: image.tag,
+          newName: '%(registry)s/%(image)s' % image,
+        },
+      },
+      params.canary_scheduler_controller.kustomize_input,
+    )
+  else {
+    kustomization: {},
+  };
 
-if params.canary_scheduler_controller.enabled then
-  kustomization
-else
-  { kustomization: {} }
+kustomization
