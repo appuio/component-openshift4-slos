@@ -8,6 +8,12 @@ This component provides a number of SLOs, which may need to be improved or tuned
 Clusters may have special SLAs, which can't be met with the default SLO configuration.
 Depending on the specific circumstances, SLOs managed by this component may generate non-actionable alerts.
 
+[NOTE]
+====
+Global modifications of the SLOs must be evaluated carefully.
+Changes to this component require a mandatory review before they can be merged.
+====
+
 == Special SLA
 
 In case of special SLAs, the relevant SLO configurations should be updated to have an objective which satisfies the SLA.
