@@ -12,20 +12,12 @@ parameters:
         output_path: ${_base_directory}/scheduler-canary
         output_type: yaml
       - input_type: external
-        input_paths:
-          - /bin/mkdir
-        args:
-          - -p
-          - \${compiled_target_dir}/${_instance}/scheduler-canary-deployment
         output_path: .
-      - input_type: external
         input_paths:
-          - openshift4-slos/run-kustomize
-        output_path: .
+          - ${_kustomize_wrapper}
+        env_vars:
+          INPUT_DIR: ${_base_directory}/scheduler-canary
         args:
-          - build
-          - ${_base_directory}/scheduler-canary
-          - -o
           - \${compiled_target_dir}/${_instance}/scheduler-canary-deployment
 
       - input_paths:
