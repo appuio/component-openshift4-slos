@@ -6,7 +6,7 @@ Providing detailed step-by-step instructions is a non-goal of this page.
 
 This component provides a number of SLOs, which may need to be improved or tuned for various reasons.
 Clusters may have special SLAs, which can't be met with the default SLO configuration.
-On clusters which use a non-standard configuration, some of the standard SLOs may generate non-actionable alerts.
+Depending on the specific circumstances, SLOs managed by this component may generate non-actionable alerts.
 
 == Special SLA
 
@@ -19,7 +19,7 @@ See section "icon:wrench[] Tune" in the runbook of an SLO for detailed instructi
 
 == Noisy SLO
 
-On clusters which have a non-standard configuration, some SLOs may generate a lot of alerts.
+SLOs managed by this component may generate a lot of alerts.
 If those alerts aren't actionable, you should determine how you can adjust the SLO to not generate these alerts.
 Generally, you may want to adjust the scope of the Prometheus queries used by the SLO to omit the components which cause the non-actionable alerts.
 
