@@ -68,6 +68,9 @@ spec:
 
             '
           labels:
+            sloth_id: kubernetes_api-canary
+            sloth_service: kubernetes_api
+            sloth_slo: canary
             sloth_window: 30d
           record: slo:sli_error:ratio_rate30d
     - name: sloth-slo-meta-recordings-kubernetes_api-canary
@@ -133,7 +136,7 @@ spec:
             sloth_service: kubernetes_api
             sloth_slo: canary
             sloth_spec: prometheus/v1
-            sloth_version: v0.10.0
+            sloth_version: v0.11.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-kubernetes_api-canary
       rules:
@@ -143,16 +146,16 @@ spec:
             summary: Probes to Kubernetes API server fail
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"kubernetes_api-canary\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (14.4 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate5m{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (14.4 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1h{sloth_id=\"\
             kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            canary\"} > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
-            (\n    (slo:sli_error:ratio_rate30m{sloth_id=\"kubernetes_api-canary\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (6 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            canary\"} > (14.4 * 0.0009999999999999432)) without (sloth_window)\n)\n\
+            or\n(\n    max(slo:sli_error:ratio_rate30m{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (6 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
             kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            canary\"} > (6 * 0.0009999999999999432))\n)\n"
+            canary\"} > (6 * 0.0009999999999999432)) without (sloth_window)\n)\n"
           labels:
             severity: critical
             slo: 'true'
@@ -165,16 +168,16 @@ spec:
             summary: Probes to Kubernetes API server fail
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"kubernetes_api-canary\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (3 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate2h{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (3 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1d{sloth_id=\"\
             kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            canary\"} > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
-            (\n    (slo:sli_error:ratio_rate6h{sloth_id=\"kubernetes_api-canary\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (1 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
+            canary\"} > (3 * 0.0009999999999999432)) without (sloth_window)\n)\nor\n\
+            (\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"kubernetes_api-canary\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"canary\"} > (1 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate3d{sloth_id=\"\
             kubernetes_api-canary\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            canary\"} > (1 * 0.0009999999999999432))\n)\n"
+            canary\"} > (1 * 0.0009999999999999432)) without (sloth_window)\n)\n"
           labels:
             severity: warning
             slo: 'true'
@@ -284,6 +287,9 @@ spec:
 
             '
           labels:
+            sloth_id: kubernetes_api-requests
+            sloth_service: kubernetes_api
+            sloth_slo: requests
             sloth_window: 30d
           record: slo:sli_error:ratio_rate30d
     - name: sloth-slo-meta-recordings-kubernetes_api-requests
@@ -349,7 +355,7 @@ spec:
             sloth_service: kubernetes_api
             sloth_slo: requests
             sloth_spec: prometheus/v1
-            sloth_version: v0.10.0
+            sloth_version: v0.11.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-kubernetes_api-requests
       rules:
@@ -359,16 +365,16 @@ spec:
             summary: High Kubernetes API server error rate
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"kubernetes_api-requests\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate5m{sloth_id=\"kubernetes_api-requests\"\
             , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (14.4 *\
-            \ 0.0009999999999999432))\n    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
+            \ 0.0009999999999999432)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1h{sloth_id=\"\
             kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            requests\"} > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
-            (\n    (slo:sli_error:ratio_rate30m{sloth_id=\"kubernetes_api-requests\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (6 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            requests\"} > (14.4 * 0.0009999999999999432)) without (sloth_window)\n\
+            )\nor\n(\n    max(slo:sli_error:ratio_rate30m{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (6 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
             kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            requests\"} > (6 * 0.0009999999999999432))\n)\n"
+            requests\"} > (6 * 0.0009999999999999432)) without (sloth_window)\n)\n"
           labels:
             severity: critical
             slo: 'true'
@@ -381,16 +387,16 @@ spec:
             summary: High Kubernetes API server error rate
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"kubernetes_api-requests\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (3 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate2h{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (3 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1d{sloth_id=\"\
             kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            requests\"} > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n\
-            (\n    (slo:sli_error:ratio_rate6h{sloth_id=\"kubernetes_api-requests\"\
-            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (1 * 0.0009999999999999432))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
+            requests\"} > (3 * 0.0009999999999999432)) without (sloth_window)\n)\n\
+            or\n(\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"kubernetes_api-requests\"\
+            , sloth_service=\"kubernetes_api\", sloth_slo=\"requests\"} > (1 * 0.0009999999999999432))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate3d{sloth_id=\"\
             kubernetes_api-requests\", sloth_service=\"kubernetes_api\", sloth_slo=\"\
-            requests\"} > (1 * 0.0009999999999999432))\n)\n"
+            requests\"} > (1 * 0.0009999999999999432)) without (sloth_window)\n)\n"
           labels:
             severity: warning
             slo: 'true'
