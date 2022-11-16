@@ -110,6 +110,9 @@ spec:
 
             '
           labels:
+            sloth_id: network-requests
+            sloth_service: network
+            sloth_slo: requests
             sloth_window: 30d
           record: slo:sli_error:ratio_rate30d
     - name: sloth-slo-meta-recordings-network-requests
@@ -175,7 +178,7 @@ spec:
             sloth_service: network
             sloth_slo: requests
             sloth_spec: prometheus/v1
-            sloth_version: v0.10.0
+            sloth_version: v0.11.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-network-requests
       rules:
@@ -185,15 +188,15 @@ spec:
             summary: High number of lost network packets
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"network-requests\"\
-            , sloth_service=\"network\", sloth_slo=\"requests\"} > (14.4 * 0.005))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1h{sloth_id=\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate5m{sloth_id=\"network-requests\"\
+            , sloth_service=\"network\", sloth_slo=\"requests\"} > (14.4 * 0.005))\
+            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1h{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (14.4 * 0.005))\n)\nor ignoring (sloth_window)\n(\n    (slo:sli_error:ratio_rate30m{sloth_id=\"\
+            } > (14.4 * 0.005)) without (sloth_window)\n)\nor\n(\n    max(slo:sli_error:ratio_rate30m{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (6 * 0.005))\n    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            } > (6 * 0.005)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (6 * 0.005))\n)\n"
+            } > (6 * 0.005)) without (sloth_window)\n)\n"
           labels:
             severity: critical
             slo: 'true'
@@ -206,15 +209,15 @@ spec:
             summary: High number of lost network packets
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"network-requests\"\
-            , sloth_service=\"network\", sloth_slo=\"requests\"} > (3 * 0.005))\n\
-            \    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate1d{sloth_id=\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate2h{sloth_id=\"network-requests\"\
+            , sloth_service=\"network\", sloth_slo=\"requests\"} > (3 * 0.005)) without\
+            \ (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1d{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (3 * 0.005))\n)\nor ignoring (sloth_window)\n(\n    (slo:sli_error:ratio_rate6h{sloth_id=\"\
+            } > (3 * 0.005)) without (sloth_window)\n)\nor\n(\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (1 * 0.005))\n    and ignoring (sloth_window)\n    (slo:sli_error:ratio_rate3d{sloth_id=\"\
+            } > (1 * 0.005)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate3d{sloth_id=\"\
             network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (1 * 0.005))\n)\n"
+            } > (1 * 0.005)) without (sloth_window)\n)\n"
           labels:
             severity: warning
             slo: 'true'

@@ -89,6 +89,10 @@ spec:
 
             '
           labels:
+            owner: myteam
+            sloth_id: appuio-ch-appuio-ch-http-get-availability
+            sloth_service: appuio-ch
+            sloth_slo: appuio-ch-http-get-availability
             sloth_window: 30d
           record: slo:sli_error:ratio_rate30d
     - name: sloth-slo-meta-recordings-appuio-ch-appuio-ch-http-get-availability
@@ -161,7 +165,7 @@ spec:
             sloth_service: appuio-ch
             sloth_slo: appuio-ch-http-get-availability
             sloth_spec: prometheus/v1
-            sloth_version: v0.10.0
+            sloth_version: v0.11.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-appuio-ch-appuio-ch-http-get-availability
       rules:
@@ -170,18 +174,18 @@ spec:
             summary: High error rate on 'appuio.ch' responses
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate5m{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate5m{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (14.4 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n\
-            \    (slo:sli_error:ratio_rate1h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            } > (14.4 * 0.0009999999999999432)) without (sloth_window)\n    and\n\
+            \    max(slo:sli_error:ratio_rate1h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (14.4 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n\
-            \    (slo:sli_error:ratio_rate30m{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            } > (14.4 * 0.0009999999999999432)) without (sloth_window)\n)\nor\n(\n\
+            \    max(slo:sli_error:ratio_rate30m{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (6 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n  \
-            \  (slo:sli_error:ratio_rate6h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            } > (6 * 0.0009999999999999432)) without (sloth_window)\n    and\n   \
+            \ max(slo:sli_error:ratio_rate6h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (6 * 0.0009999999999999432))\n)\n"
+            } > (6 * 0.0009999999999999432)) without (sloth_window)\n)\n"
           labels:
             category: availability
             severity: warning
@@ -194,18 +198,18 @@ spec:
             summary: High error rate on 'appuio.ch' responses
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    (slo:sli_error:ratio_rate2h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+          expr: "(\n    max(slo:sli_error:ratio_rate2h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (3 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n  \
-            \  (slo:sli_error:ratio_rate1d{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            } > (3 * 0.0009999999999999432)) without (sloth_window)\n    and\n   \
+            \ max(slo:sli_error:ratio_rate1d{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (3 * 0.0009999999999999432))\n)\nor ignoring (sloth_window)\n(\n \
-            \   (slo:sli_error:ratio_rate6h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            } > (3 * 0.0009999999999999432)) without (sloth_window)\n)\nor\n(\n  \
+            \  max(slo:sli_error:ratio_rate6h{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (1 * 0.0009999999999999432))\n    and ignoring (sloth_window)\n  \
-            \  (slo:sli_error:ratio_rate3d{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
+            } > (1 * 0.0009999999999999432)) without (sloth_window)\n    and\n   \
+            \ max(slo:sli_error:ratio_rate3d{sloth_id=\"appuio-ch-appuio-ch-http-get-availability\"\
             , sloth_service=\"appuio-ch\", sloth_slo=\"appuio-ch-http-get-availability\"\
-            } > (1 * 0.0009999999999999432))\n)\n"
+            } > (1 * 0.0009999999999999432)) without (sloth_window)\n)\n"
           labels:
             category: availability
             routing_key: myteam
