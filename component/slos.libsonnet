@@ -93,7 +93,7 @@ local defaultSlos = {
           description: 'OpenShift ingress SLO based on canary availability',
           sli: {
             raw: {
-              error_ratio_query: '1 - avg_over_time(ingress_canary_route_reachable[{{.window}}])',
+              error_ratio_query: '1 - avg_over_time(appuio_ocp4_slo:ingress_canary_route_reachable:no_instance[{{.window}}])',
             },
           },
           alerting: {
