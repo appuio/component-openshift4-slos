@@ -17,9 +17,17 @@ local params = inv.parameters.openshift4_slos;
 local mergeSpec = function(name, spec)
   local slothRendered = std.parseJson(kap.yaml_load('%s/sloth-output/%s.yaml' % [ inv.parameters._base_directory, name ]));
   local metadata = com.makeMergeable(std.get(spec, 'metadata', {}));
+  local extra_rules = std.get(spec, 'extra_rules', []);
   kube._Object('monitoring.coreos.com/v1', 'PrometheusRule', kube.hyphenate(name)) {
     metadata+: metadata,
-    spec: slothRendered,
+    spec: slothRendered {
+      [if std.length(extra_rules) > 0 then 'groups']+: [
+        {
+          name: 'syn-sloth-slo-%s-extra-rules' % name,
+          rules: extra_rules,
+        },
+      ],
+    },
   }
 ;
 
