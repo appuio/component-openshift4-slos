@@ -184,3 +184,7 @@ spec:
             sloth_severity: ticket
             syn: 'true'
             syn_component: openshift4-slos
+    - name: syn-sloth-slo-ingress-extra-rules
+      rules:
+        - expr: max without(pod,instance) (ingress_canary_route_reachable)
+          record: appuio_ocp4_slo:ingress_canary_route_reachable:no_instance

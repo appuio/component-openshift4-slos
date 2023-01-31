@@ -78,6 +78,13 @@ local defaultSlos = {
     local os = com.getValueOrDefault(inv.parameters, 'openshift', {}),
     local appsDomain = com.getValueOrDefault(os, 'appsDomain', ''),
 
+    extra_rules: [
+      {
+        record: 'appuio_ocp4_slo:ingress_canary_route_reachable:no_instance',
+        expr: 'max without(pod,instance) (ingress_canary_route_reachable)',
+      },
+    ],
+
     sloth_input: {
       version: 'prometheus/v1',
       service: 'ingress',
