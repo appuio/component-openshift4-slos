@@ -6,6 +6,18 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
+// Each entry in this object is used as the base definition for an SLI/SLO
+// pair managed by the component.
+// Field `sloth_input` is rendered into a valid input for Sloth and the
+// resulting Sloth output is loaded again in main.jsonnet and emitted as a
+// PrometheusRule object.
+// You can specify additional metadata for the resulting `PrometheusRule`
+// object in the optional top-level field `metadata`.
+// If you need additional Prometheus rules (e.g. a recording rule to remove
+// noisy labels from a metric) to define your SLI query, you can specify
+// complete additional rules in top-level field `extra_rules` in the
+// corresponding SLO's definition. The contents of this field are added to the
+// resulting PrometheusRule object as an extra rule group (cf. main.jsonnet).
 local defaultSlos = {
   'workload-schedulability': {
     local config = params.slos['workload-schedulability'],
