@@ -6,6 +6,9 @@ parameters:
   openshift4_slos:
     specs:
       appuio-ch-http-get-availability:
+        extra_rules:
+          - record: appuio_ch_availability:probe_success:without_pod
+            expr: max without(pod) (probe_success{instance="https://www.appuio.ch/"})
         sloth_input:
           version: "prometheus/v1"
           service: "appuio-ch"
@@ -31,7 +34,7 @@ parameters:
                 raw:
                   error_ratio_query: |
                     1 - (
-                        sum_over_time(probe_success{instance="https://www.appuio.ch/"}[{{.window}}])
+                        sum_over_time(appuio_ch_availability:probe_success:without_pod[{{.window}}])
                       /
                         count_over_time(up{instance="https://www.appuio.ch/"}[{{.window}}])
                     )

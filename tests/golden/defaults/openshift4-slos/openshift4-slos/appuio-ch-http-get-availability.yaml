@@ -9,9 +9,9 @@ spec:
   groups:
     - name: sloth-slo-sli-recordings-appuio-ch-appuio-ch-http-get-availability
       rules:
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[5m])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[5m])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[5m])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[5m])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -19,9 +19,9 @@ spec:
             sloth_slo: appuio-ch-http-get-availability
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[30m])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[30m])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[30m])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[30m])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -29,9 +29,9 @@ spec:
             sloth_slo: appuio-ch-http-get-availability
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[1h])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[1h])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[1h])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[1h])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -39,9 +39,9 @@ spec:
             sloth_slo: appuio-ch-http-get-availability
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[2h])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[2h])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[2h])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[2h])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -49,9 +49,9 @@ spec:
             sloth_slo: appuio-ch-http-get-availability
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[6h])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[6h])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[6h])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[6h])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -59,9 +59,9 @@ spec:
             sloth_slo: appuio-ch-http-get-availability
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[1d])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[1d])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[1d])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[1d])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -69,9 +69,9 @@ spec:
             sloth_slo: appuio-ch-http-get-availability
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
-        - expr: "(1 - (\n    sum_over_time(probe_success{instance=\"https://www.appuio.ch/\"\
-            }[3d])\n  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"\
-            }[3d])\n)\n)"
+        - expr: "(1 - (\n    sum_over_time(appuio_ch_availability:probe_success:without_pod[3d])\n\
+            \  /\n    count_over_time(up{instance=\"https://www.appuio.ch/\"}[3d])\n\
+            )\n)"
           labels:
             owner: myteam
             sloth_id: appuio-ch-appuio-ch-http-get-availability
@@ -218,3 +218,7 @@ spec:
             sloth_severity: ticket
             syn: 'true'
             syn_component: openshift4-slos
+    - name: syn-sloth-slo-appuio-ch-http-get-availability-extra-rules
+      rules:
+        - expr: max without(pod) (probe_success{instance="https://www.appuio.ch/"})
+          record: appuio_ch_availability:probe_success:without_pod
