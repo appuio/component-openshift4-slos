@@ -58,15 +58,10 @@ spec:
             sloth_slo: canary
             sloth_window: 3d
           record: slo:sli_error:ratio_rate3d
-        - expr: 'sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="ingress-canary",
-            sloth_service="ingress", sloth_slo="canary"}[30d])
-
+        - expr: |
+            sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"}[30d])
             / ignoring (sloth_window)
-
-            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="ingress-canary",
-            sloth_service="ingress", sloth_slo="canary"}[30d])
-
-            '
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"}[30d])
           labels:
             sloth_id: ingress-canary
             sloth_service: ingress
@@ -93,29 +88,19 @@ spec:
             sloth_service: ingress
             sloth_slo: canary
           record: slo:time_period:days
-        - expr: 'slo:sli_error:ratio_rate5m{sloth_id="ingress-canary", sloth_service="ingress",
-            sloth_slo="canary"}
-
+        - expr: |
+            slo:sli_error:ratio_rate5m{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"}
             / on(sloth_id, sloth_slo, sloth_service) group_left
-
-            slo:error_budget:ratio{sloth_id="ingress-canary", sloth_service="ingress",
-            sloth_slo="canary"}
-
-            '
+            slo:error_budget:ratio{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"}
           labels:
             sloth_id: ingress-canary
             sloth_service: ingress
             sloth_slo: canary
           record: slo:current_burn_rate:ratio
-        - expr: 'slo:sli_error:ratio_rate30d{sloth_id="ingress-canary", sloth_service="ingress",
-            sloth_slo="canary"}
-
+        - expr: |
+            slo:sli_error:ratio_rate30d{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"}
             / on(sloth_id, sloth_slo, sloth_service) group_left
-
-            slo:error_budget:ratio{sloth_id="ingress-canary", sloth_service="ingress",
-            sloth_slo="canary"}
-
-            '
+            slo:error_budget:ratio{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"}
           labels:
             sloth_id: ingress-canary
             sloth_service: ingress
@@ -147,15 +132,18 @@ spec:
             summary: Probes to ingress canary fail
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    max(slo:sli_error:ratio_rate5m{sloth_id=\"ingress-canary\"\
-            , sloth_service=\"ingress\", sloth_slo=\"canary\"} > (14.4 * 0.0025))\
-            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1h{sloth_id=\"\
-            ingress-canary\", sloth_service=\"ingress\", sloth_slo=\"canary\"} > (14.4\
-            \ * 0.0025)) without (sloth_window)\n)\nor\n(\n    max(slo:sli_error:ratio_rate30m{sloth_id=\"\
-            ingress-canary\", sloth_service=\"ingress\", sloth_slo=\"canary\"} > (6\
-            \ * 0.0025)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
-            ingress-canary\", sloth_service=\"ingress\", sloth_slo=\"canary\"} > (6\
-            \ * 0.0025)) without (sloth_window)\n)\n"
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate5m{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (14.4 * 0.0025)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1h{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (14.4 * 0.0025)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate30m{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (6 * 0.0025)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate6h{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (6 * 0.0025)) without (sloth_window)
+            )
           labels:
             severity: critical
             slo: 'true'
@@ -169,15 +157,18 @@ spec:
             summary: Probes to ingress canary fail
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    max(slo:sli_error:ratio_rate2h{sloth_id=\"ingress-canary\"\
-            , sloth_service=\"ingress\", sloth_slo=\"canary\"} > (3 * 0.0025)) without\
-            \ (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1d{sloth_id=\"\
-            ingress-canary\", sloth_service=\"ingress\", sloth_slo=\"canary\"} > (3\
-            \ * 0.0025)) without (sloth_window)\n)\nor\n(\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
-            ingress-canary\", sloth_service=\"ingress\", sloth_slo=\"canary\"} > (1\
-            \ * 0.0025)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate3d{sloth_id=\"\
-            ingress-canary\", sloth_service=\"ingress\", sloth_slo=\"canary\"} > (1\
-            \ * 0.0025)) without (sloth_window)\n)\n"
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate2h{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (3 * 0.0025)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1d{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (3 * 0.0025)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate6h{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (1 * 0.0025)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate3d{sloth_id="ingress-canary", sloth_service="ingress", sloth_slo="canary"} > (1 * 0.0025)) without (sloth_window)
+            )
           labels:
             severity: warning
             slo: 'true'

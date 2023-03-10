@@ -1,14 +1,36 @@
 apiVersion: v1
 data:
-  blackbox.yaml: "modules:\n  http_2xx:\n    http:\n      follow_redirects: true\n\
-    \      preferred_ip_protocol: \"ip4\"\n    prober: \"http\"\n    timeout: \"5s\"\
-    \n  http_kube_ca_2xx:\n    http:\n      follow_redirects: true\n      preferred_ip_protocol:\
-    \ \"ip4\"\n      tls_config:\n        ca_file: \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\
-    \n    prober: \"http\"\n    timeout: \"5s\"\n  http_post_2xx:\n    http:\n   \
-    \   method: \"POST\"\n      preferred_ip_protocol: \"ip4\"\n    prober: \"http\"\
-    \n  ssh_banner:\n    prober: \"tcp\"\n    tcp:\n      preferred_ip_protocol: \"\
-    ip4\"\n      query_response:\n        - expect: \"^SSH-2.0-\"\n  tcp_connect:\n\
-    \    prober: \"tcp\"\n    tcp:\n      preferred_ip_protocol: \"ip4\""
+  blackbox.yaml: |-
+    modules:
+      http_2xx:
+        http:
+          follow_redirects: true
+          preferred_ip_protocol: "ip4"
+        prober: "http"
+        timeout: "5s"
+      http_kube_ca_2xx:
+        http:
+          follow_redirects: true
+          preferred_ip_protocol: "ip4"
+          tls_config:
+            ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+        prober: "http"
+        timeout: "5s"
+      http_post_2xx:
+        http:
+          method: "POST"
+          preferred_ip_protocol: "ip4"
+        prober: "http"
+      ssh_banner:
+        prober: "tcp"
+        tcp:
+          preferred_ip_protocol: "ip4"
+          query_response:
+            - expect: "^SSH-2.0-"
+      tcp_connect:
+        prober: "tcp"
+        tcp:
+          preferred_ip_protocol: "ip4"
 kind: ConfigMap
 metadata:
   annotations: {}

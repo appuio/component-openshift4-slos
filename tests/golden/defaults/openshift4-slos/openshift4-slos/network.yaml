@@ -9,106 +9,80 @@ spec:
   groups:
     - name: sloth-slo-sli-recordings-network-requests
       rules:
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[5m])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[5m])))
             /
-
             (sum(rate(ping_rtt_seconds_count[5m])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[30m])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[30m])))
             /
-
             (sum(rate(ping_rtt_seconds_count[30m])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[1h])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[1h])))
             /
-
             (sum(rate(ping_rtt_seconds_count[1h])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[2h])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[2h])))
             /
-
             (sum(rate(ping_rtt_seconds_count[2h])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[6h])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[6h])))
             /
-
             (sum(rate(ping_rtt_seconds_count[6h])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[1d])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[1d])))
             /
-
             (sum(rate(ping_rtt_seconds_count[1d])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
-        - expr: '(sum(rate(ping_rtt_seconds_count{reason="lost"}[3d])))
-
+        - expr: |
+            (sum(rate(ping_rtt_seconds_count{reason="lost"}[3d])))
             /
-
             (sum(rate(ping_rtt_seconds_count[3d])))
-
-            '
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
             sloth_window: 3d
           record: slo:sli_error:ratio_rate3d
-        - expr: 'sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="network-requests",
-            sloth_service="network", sloth_slo="requests"}[30d])
-
+        - expr: |
+            sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"}[30d])
             / ignoring (sloth_window)
-
-            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="network-requests",
-            sloth_service="network", sloth_slo="requests"}[30d])
-
-            '
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"}[30d])
           labels:
             sloth_id: network-requests
             sloth_service: network
@@ -135,29 +109,19 @@ spec:
             sloth_service: network
             sloth_slo: requests
           record: slo:time_period:days
-        - expr: 'slo:sli_error:ratio_rate5m{sloth_id="network-requests", sloth_service="network",
-            sloth_slo="requests"}
-
+        - expr: |
+            slo:sli_error:ratio_rate5m{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"}
             / on(sloth_id, sloth_slo, sloth_service) group_left
-
-            slo:error_budget:ratio{sloth_id="network-requests", sloth_service="network",
-            sloth_slo="requests"}
-
-            '
+            slo:error_budget:ratio{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"}
           labels:
             sloth_id: network-requests
             sloth_service: network
             sloth_slo: requests
           record: slo:current_burn_rate:ratio
-        - expr: 'slo:sli_error:ratio_rate30d{sloth_id="network-requests", sloth_service="network",
-            sloth_slo="requests"}
-
+        - expr: |
+            slo:sli_error:ratio_rate30d{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"}
             / on(sloth_id, sloth_slo, sloth_service) group_left
-
-            slo:error_budget:ratio{sloth_id="network-requests", sloth_service="network",
-            sloth_slo="requests"}
-
-            '
+            slo:error_budget:ratio{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"}
           labels:
             sloth_id: network-requests
             sloth_service: network
@@ -188,15 +152,18 @@ spec:
             summary: High number of lost network packets
             title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    max(slo:sli_error:ratio_rate5m{sloth_id=\"network-requests\"\
-            , sloth_service=\"network\", sloth_slo=\"requests\"} > (14.4 * 0.005))\
-            \ without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1h{sloth_id=\"\
-            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (14.4 * 0.005)) without (sloth_window)\n)\nor\n(\n    max(slo:sli_error:ratio_rate30m{sloth_id=\"\
-            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (6 * 0.005)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
-            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (6 * 0.005)) without (sloth_window)\n)\n"
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate5m{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (14.4 * 0.005)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1h{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (14.4 * 0.005)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate30m{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (6 * 0.005)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate6h{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (6 * 0.005)) without (sloth_window)
+            )
           labels:
             severity: critical
             slo: 'true'
@@ -209,15 +176,18 @@ spec:
             summary: High number of lost network packets
             title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
               budget burn rate is too fast.
-          expr: "(\n    max(slo:sli_error:ratio_rate2h{sloth_id=\"network-requests\"\
-            , sloth_service=\"network\", sloth_slo=\"requests\"} > (3 * 0.005)) without\
-            \ (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate1d{sloth_id=\"\
-            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (3 * 0.005)) without (sloth_window)\n)\nor\n(\n    max(slo:sli_error:ratio_rate6h{sloth_id=\"\
-            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (1 * 0.005)) without (sloth_window)\n    and\n    max(slo:sli_error:ratio_rate3d{sloth_id=\"\
-            network-requests\", sloth_service=\"network\", sloth_slo=\"requests\"\
-            } > (1 * 0.005)) without (sloth_window)\n)\n"
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate2h{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (3 * 0.005)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1d{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (3 * 0.005)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate6h{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (1 * 0.005)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate3d{sloth_id="network-requests", sloth_service="network", sloth_slo="requests"} > (1 * 0.005)) without (sloth_window)
+            )
           labels:
             severity: warning
             slo: 'true'
