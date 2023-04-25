@@ -58,7 +58,18 @@ local defaultSlos = {
           sli: {
             events: {
               error_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s",status="fail-unknown"}[{{.window}}]))' % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
-              total_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s"}[{{.window}}]))' % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
+              total_query:
+                // We use (sum() > 0) or on() vector(1)) to guard against time
+                // windows where we have 0 storage operations, which would
+                // otherwise result in a division by 0. We do this because,
+                // dividing by 0 results in the whole expression evaluating to
+                // NaN which breaks the SLO alert.
+                // Note that we can safely divide by 1, since there can't be
+                // any failed operations when there's no operations at all, so
+                // if the `vector(1)` is used, the expression will always
+                // reduce to 0/1.
+                '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s"}[{{.window}}])) > 0) or on() vector(1)' %
+                [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
             },
           },
           alerting: {

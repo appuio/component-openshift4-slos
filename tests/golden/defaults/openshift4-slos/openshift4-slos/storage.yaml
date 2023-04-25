@@ -12,7 +12,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[5m])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[5m])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[5m])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
@@ -22,7 +22,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[30m])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[30m])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[30m])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
@@ -32,7 +32,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1h])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1h])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1h])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
@@ -42,7 +42,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[2h])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[2h])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[2h])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
@@ -52,7 +52,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[6h])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[6h])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[6h])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
@@ -62,7 +62,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1d])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1d])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1d])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
@@ -72,7 +72,7 @@ spec:
         - expr: |
             (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[3d])))
             /
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[3d])))
+            ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[3d])) > 0) or on() vector(1))
           labels:
             sloth_id: storage-csi-operations
             sloth_service: storage
