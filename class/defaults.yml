@@ -20,7 +20,7 @@ parameters:
       canary:
         registry: docker.io
         image: curlimages/curl
-        tag: "7.88.1"
+        tag: "8.00.1"
       network_canary:
         registry: ghcr.io
         image: appuio/network-canary
