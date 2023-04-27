@@ -25,7 +25,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          image: ghcr.io/appuio/network-canary:v0.1.1
+          image: ghcr.io/appuio/network-canary:v0.2.0
           imagePullPolicy: IfNotPresent
           name: canary
           ports:

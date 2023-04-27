@@ -24,7 +24,7 @@ parameters:
       network_canary:
         registry: ghcr.io
         image: appuio/network-canary
-        tag: v0.1.1
+        tag: v0.2.0
 
     alerting:
       labels:
