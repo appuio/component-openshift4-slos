@@ -57,7 +57,14 @@ local defaultSlos = {
           description: 'SLO based on number of failed csi operations',
           sli: {
             events: {
-              error_query: 'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s",status="fail-unknown"}[{{.window}}]))' % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
+              // We use `or on() vector(0)` here to ensure we always have a
+              // value for the error query, even if there's 0 failing storage
+              // operations in a time window. This is necessary because the
+              // timeseries for status="fail-unknown" may not exist at all if
+              // there's no failures.
+              error_query:
+                'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s",status="fail-unknown"}[{{.window}}])) or on() vector(0)'
+                % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
               total_query:
                 // We use (sum() > 0) or on() vector(1)) to guard against time
                 // windows where we have 0 storage operations, which would
