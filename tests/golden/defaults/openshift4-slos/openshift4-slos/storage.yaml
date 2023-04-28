@@ -10,7 +10,7 @@ spec:
     - name: sloth-slo-sli-recordings-storage-csi-operations
       rules:
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[5m])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[5m])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[5m])) > 0) or on() vector(1))
           labels:
@@ -20,7 +20,7 @@ spec:
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[30m])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[30m])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[30m])) > 0) or on() vector(1))
           labels:
@@ -30,7 +30,7 @@ spec:
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1h])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1h])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1h])) > 0) or on() vector(1))
           labels:
@@ -40,7 +40,7 @@ spec:
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[2h])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[2h])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[2h])) > 0) or on() vector(1))
           labels:
@@ -50,7 +50,7 @@ spec:
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[6h])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[6h])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[6h])) > 0) or on() vector(1))
           labels:
@@ -60,7 +60,7 @@ spec:
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1d])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[1d])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[1d])) > 0) or on() vector(1))
           labels:
@@ -70,7 +70,7 @@ spec:
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
         - expr: |
-            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[3d])))
+            (sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+",status="fail-unknown"}[3d])) or on() vector(0))
             /
             ((sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"kubernetes.io/csi.+",operation_name=~".+"}[3d])) > 0) or on() vector(1))
           labels:
