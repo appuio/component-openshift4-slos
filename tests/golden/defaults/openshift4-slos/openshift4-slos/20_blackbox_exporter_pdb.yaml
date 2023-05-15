@@ -1,0 +1,17 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: openshift4-slos
+    app.kubernetes.io/instance: prometheus-blackbox-exporter
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    name: prometheus-blackbox-exporter
+  name: prometheus-blackbox-exporter
+  namespace: appuio-openshift4-slos
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: prometheus-blackbox-exporter
