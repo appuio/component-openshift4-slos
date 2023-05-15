@@ -12,7 +12,7 @@ metadata:
   namespace: appuio-openshift4-slos
 spec:
   minReadySeconds: 30
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -34,6 +34,17 @@ spec:
         app.kubernetes.io/name: prometheus-blackbox-exporter
         name: prometheus-blackbox-exporter
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution: []
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - prometheus-blackbox-exporter
+              topologyKey: kubernetes.io/hostname
       containers:
         - args:
             - --config.file=/config/blackbox.yaml

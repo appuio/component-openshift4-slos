@@ -84,7 +84,7 @@ local deploy = com.namespaced(
       namespace: params.blackbox_exporter.namespace,
     },
     spec+: {
-      replicas: 1,
+      replicas: params.blackbox_exporter.deployment.replicas,
       selector: {
         matchLabels: matchLabels,
       },
@@ -96,6 +96,7 @@ local deploy = com.namespaced(
           labels+: labels,
         },
         spec+: {
+          affinity: params.blackbox_exporter.deployment.affinity,
           containers: [
             kube.Container('blackbox-exporter') {
               args: [
@@ -141,6 +142,14 @@ local deploy = com.namespaced(
   },
 );
 
+local podDisruptionBudget = kube.PodDisruptionBudget(params.blackbox_exporter.name) {
+  metadata+: {
+    labels+: labels,
+    namespace: params.blackbox_exporter.namespace,
+  },
+  spec+: params.blackbox_exporter.podDisruptionBudget,
+};
+
 local service =
   kube.Service(params.blackbox_exporter.name) {
     metadata+: {
@@ -172,6 +181,7 @@ local probes = com.generateResources(
     '20_blackbox_exporter_deploy': deploy,
     '20_blackbox_exporter_configmap': configMap,
     '20_blackbox_exporter_service': service,
+    '20_blackbox_exporter_pdb': podDisruptionBudget,
   } else {},
   probes: if params.blackbox_exporter.enabled == true then {
     '20_probes': probes,

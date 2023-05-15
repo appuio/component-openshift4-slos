@@ -343,6 +343,64 @@ default:: see https://github.com/appuio/component-openshift4-slos/blob/master/cl
 The resources to use for the Blackbox exporter deployment.
 
 
+=== `blackbox_exporter.deployment.affinity`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+deployment:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution: []
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchExpressions:
+              - key: name
+                operator: In
+                values:
+                  - ${openshift4_slos:blackbox_exporter:name}
+----
+
+Affinity rules for the Blackbox exporter deployment.
+
+Schedules replicas on different nodes.
+This is done to avoid SLO violations when rebooting a worker node.
+
+
+=== `blackbox_exporter.deployment.replicas`
+
+[horizontal]
+type:: integer
+default:: `2`
+
+The number of replicas for the Blackbox exporter deployment.
+Defaults to 2 to avoid SLO violations when rebooting a worker node.
+
+
+=== `blackbox_exporter.deployment.podDisruptionBudget`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+deployment:
+  podDisruptionBudget:
+    selector:
+      matchLabels:
+        name: ${openshift4_slos:blackbox_exporter:name}
+    minAvailable: 1
+----
+
+The PodDisruptionBudget for the Blackbox exporter deployment.
+Ensures at least one replica is available at all times.
+
+
 === `blackbox_exporter.config`
 
 [horizontal]

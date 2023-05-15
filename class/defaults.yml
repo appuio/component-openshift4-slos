@@ -80,7 +80,21 @@ parameters:
       name: prometheus-blackbox-exporter
       namespace: ${openshift4_slos:namespace}
       probes: {}
+
+
       deployment:
+        replicas: 2
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution: []
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: name
+                      operator: In
+                      values:
+                        - ${openshift4_slos:blackbox_exporter:name}
         resources:
           limits:
             cpu: '20m'
@@ -88,6 +102,13 @@ parameters:
           requests:
             cpu: '10m'
             memory: '20Mi'
+
+      podDisruptionBudget:
+        selector:
+          matchLabels:
+            name: ${openshift4_slos:blackbox_exporter:name}
+        minAvailable: 1
+
       config:
         modules:
           http_2xx:
