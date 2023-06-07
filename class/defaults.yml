@@ -75,6 +75,13 @@ parameters:
 
     specs: {}
 
+    controller_node_affinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/infra
+                operator: Exists
+
     blackbox_exporter:
       enabled: true
       name: prometheus-blackbox-exporter
@@ -85,6 +92,7 @@ parameters:
       deployment:
         replicas: 2
         affinity:
+          nodeAffinity: ${openshift4_slos:controller_node_affinity}
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution: []
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -166,3 +174,15 @@ parameters:
               kind: Namespace
               metadata:
                 name: appuio-scheduler-canary
+          - patch: |-
+              $patch: merge
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: controller-manager
+                namespace: system
+              spec:
+                template:
+                  spec:
+                    affinity:
+                      nodeAffinity: ${openshift4_slos:controller_node_affinity}

@@ -68,6 +68,22 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
     podTemplate: {
       metadata: {},
       spec: {
+        affinity: {
+          nodeAffinity: {
+            requiredDuringSchedulingIgnoredDuringExecution: {
+              nodeSelectorTerms: [
+                {
+                  matchExpressions: [
+                    {
+                      key: 'node-role.kubernetes.io/app',
+                      operator: 'Exists',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
         containers: [
           {
             command: [
@@ -97,6 +113,9 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
 {
   '00_namespace': kube.Namespace(params.namespace) {
     metadata+: {
+      annotations+: {
+        'openshift.io/node-selector': '',
+      },
       labels+: {
         'openshift.io/cluster-monitoring': 'true',
       },

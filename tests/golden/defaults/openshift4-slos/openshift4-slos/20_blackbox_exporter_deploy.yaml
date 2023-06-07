@@ -35,6 +35,12 @@ spec:
         name: prometheus-blackbox-exporter
     spec:
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/infra
+                    operator: Exists
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution: []
           requiredDuringSchedulingIgnoredDuringExecution:

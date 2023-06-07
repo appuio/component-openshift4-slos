@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  annotations: {}
+  annotations:
+    openshift.io/node-selector: ''
   labels:
     name: appuio-openshift4-slos
     openshift.io/cluster-monitoring: 'true'
