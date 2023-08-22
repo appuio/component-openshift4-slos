@@ -8,6 +8,9 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
+local isOpenshift = std.startsWith(inv.parameters.facts.distribution, 'openshift');
+local splitNodeSelector = std.split(params.network_canary.nodeselector, '=');
+
 local ns = kube.Namespace(params.network_canary.namespace) {
   metadata+: {
     annotations+: {
@@ -44,6 +47,9 @@ local ds = kube.DaemonSet('network-canary') {
               },
             },
           },
+        },
+        [if !isOpenshift then 'nodeSelector']: {
+          [splitNodeSelector[0]]: splitNodeSelector[1],
         },
         tolerations: std.objectValues(params.network_canary.tolerations),
       },
