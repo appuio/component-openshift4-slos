@@ -4,6 +4,7 @@ metadata:
   annotations:
     openshift.io/node-selector: node-role.kubernetes.io/worker=true
   labels:
+    monitoring.syn.tools/infra: 'true'
     name: appuio-network-canary
     openshift.io/cluster-monitoring: 'true'
   name: appuio-network-canary
