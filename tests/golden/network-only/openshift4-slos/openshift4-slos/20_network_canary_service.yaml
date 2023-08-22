@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    name: network-canary
+  name: network-canary
+  namespace: appuio-network-canary
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 2112
+      targetPort: 2112
+  selector:
+    name: network-canary
+  type: ClusterIP

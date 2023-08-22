@@ -121,8 +121,8 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
       },
     },
   },
-  '30_canaryImageStream': canaryImageStream,
-  '30_canary': canary,
+  [if params.canary_scheduler_controller.enabled then '30_canaryImageStream']: canaryImageStream,
+  [if params.canary_scheduler_controller.enabled then '30_canary']: canary,
 }
 + blackbox.deployment
 + blackbox.probes

@@ -1,0 +1,28 @@
+# Overwrite parameters here
+
+parameters:
+  openshift4_slos:
+    slos:
+      storage:
+        csi-operations:
+          enabled: false
+      ingress:
+        canary:
+          enabled: false
+      kubernetes_api:
+        requests:
+          enabled: false
+        canary:
+          enabled: false
+      workload-schedulability:
+        canary:
+          enabled: false
+      network:
+        canary:
+          enabled: true
+
+    blackbox_exporter:
+      enabled: false
+
+    canary_scheduler_controller:
+      enabled: false

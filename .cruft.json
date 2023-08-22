@@ -1,13 +1,13 @@
 {
   "template": "https://github.com/projectsyn/commodore-component-template.git",
-  "commit": "fc8ae18a6798d5b232442630883e5ec9b8636d09",
+  "commit": "dcae06138d227340acb8056d0d031f32d75c09b5",
   "checkout": "main",
   "context": {
     "cookiecutter": {
       "name": "openshift4-slos",
       "slug": "openshift4-slos",
       "parameter_key": "openshift4_slos",
-      "test_cases": "defaults",
+      "test_cases": "defaults network-only",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",
