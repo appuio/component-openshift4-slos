@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   annotations:
-    openshift.io/node-selector: node-role.kubernetes.io/worker=
+    openshift.io/node-selector: node-role.kubernetes.io/worker=true
   labels:
     name: appuio-network-canary
     openshift.io/cluster-monitoring: 'true'
