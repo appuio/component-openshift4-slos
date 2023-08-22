@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations: {}
+  labels:
+    name: network-canary
+  name: network-canary
+  namespace: appuio-network-canary
+spec:
+  selector:
+    matchLabels:
+      name: network-canary
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        name: network-canary
+    spec:
+      containers:
+        - args:
+            - /canary
+            - --ping-dns=network-canary
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          image: ghcr.io/appuio/network-canary:v0.2.0
+          imagePullPolicy: IfNotPresent
+          name: canary
+          ports:
+            - containerPort: 2112
+              name: metrics
+          resources:
+            limits:
+              memory: 40Mi
+            requests:
+              cpu: 1m
+              memory: 20Mi
+          stdin: false
+          tty: false
+          volumeMounts: []
+      imagePullSecrets: []
+      initContainers: []
+      terminationGracePeriodSeconds: 30
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        - key: storagenode
+          operator: Exists
+      volumes: []
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
