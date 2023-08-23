@@ -42,8 +42,6 @@ spec:
           volumeMounts: []
       imagePullSecrets: []
       initContainers: []
-      nodeSelector:
-        node-role.kubernetes.io/worker: ''
       terminationGracePeriodSeconds: 30
       tolerations:
         - effect: NoSchedule
