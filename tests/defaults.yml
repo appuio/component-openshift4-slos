@@ -1,6 +1,8 @@
 # Overwrite parameters here
 
 parameters:
+  facts:
+    distribution: openshift4
   openshift:
     appsDomain: apps.foo.example.com
   openshift4_slos:
