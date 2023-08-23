@@ -4,6 +4,7 @@ metadata:
   annotations:
     openshift.io/node-selector: ''
   labels:
+    monitoring.syn.tools/infra: 'true'
     name: appuio-openshift4-slos
     openshift.io/cluster-monitoring: 'true'
   name: appuio-openshift4-slos

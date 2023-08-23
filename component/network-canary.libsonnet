@@ -18,6 +18,7 @@ local ns = kube.Namespace(params.network_canary.namespace) {
     },
     labels+: {
       'openshift.io/cluster-monitoring': 'true',
+      [if !isOpenshift then 'monitoring.syn.tools/infra']: 'true',
     },
   },
 };

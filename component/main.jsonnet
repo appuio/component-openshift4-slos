@@ -12,6 +12,8 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
+local isOpenshift = std.startsWith(inv.parameters.facts.distribution, 'openshift');
+
 
 // Define outputs below
 local mergeSpec = function(name, spec)
@@ -118,6 +120,7 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
       },
       labels+: {
         'openshift.io/cluster-monitoring': 'true',
+        [if !isOpenshift then 'monitoring.syn.tools/infra']: 'true',
       },
     },
   },
