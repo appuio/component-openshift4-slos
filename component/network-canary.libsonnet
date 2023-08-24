@@ -52,6 +52,14 @@ local ds = kube.DaemonSet('network-canary') {
         [if !isOpenshift then 'nodeSelector']: {
           [splitNodeSelector[0]]: splitNodeSelector[1],
         },
+        [if !isOpenshift then 'securityContext']: {
+          // on non-OCP (tested on RKE2/Ubuntu) we need to set the rootless
+          // ping sysctl.
+          sysctls: [ {
+            name: 'net.ipv4.ping_group_range',
+            value: '0 2147483647',
+          } ],
+        },
         tolerations: std.objectValues(params.network_canary.tolerations),
       },
     },
