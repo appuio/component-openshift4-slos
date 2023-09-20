@@ -25,7 +25,7 @@ local kustomization =
       params.canary_scheduler_controller.kustomize_input,
     )
   else {
-    kustomization: {},
+    kustomization: { resources: [] },
   };
 
 kustomization
