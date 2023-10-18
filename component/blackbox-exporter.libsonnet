@@ -29,7 +29,7 @@ local defaultProbes = {
       targets: {
         staticConfig: {
           static: [
-            'https://kubernetes.default.svc.cluster.local/readyz',
+            k8sAPICanary._sli.target,
           ],
         },
       },

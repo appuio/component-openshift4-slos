@@ -66,6 +66,7 @@ parameters:
           enabled: true
           objective: 99.9
           _sli:
+            target: https://kubernetes.default.svc.cluster.local/readyz
             interval: 10s
             timeout: 5s
       network:
