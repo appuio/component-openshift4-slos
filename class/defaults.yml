@@ -83,6 +83,13 @@ parameters:
               - key: node-role.kubernetes.io/infra
                 operator: Exists
 
+    canary_node_affinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/app
+                operator: Exists
+
     blackbox_exporter:
       enabled: true
       name: prometheus-blackbox-exporter
