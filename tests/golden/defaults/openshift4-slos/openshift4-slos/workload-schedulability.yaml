@@ -3,6 +3,7 @@ kind: PrometheusRule
 metadata:
   annotations: {}
   labels:
+    monitoring.syn.tools/enabled: 'true'
     name: workload-schedulability
   name: workload-schedulability
 spec:

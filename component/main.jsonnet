@@ -12,15 +12,12 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
-local isOpenshift = std.startsWith(inv.parameters.facts.distribution, 'openshift');
-
-
 // Define outputs below
 local mergeSpec = function(name, spec)
   local slothRendered = std.parseJson(kap.yaml_load('%s/sloth-output/%s.yaml' % [ inv.parameters._base_directory, name ]));
   local metadata = com.makeMergeable(
     std.get(spec, 'metadata', {}) + {
-      [if !isOpenshift then 'labels']: { 'monitoring.syn.tools/enabled': 'true' },
+      labels+: { 'monitoring.syn.tools/enabled': 'true' },
     },
   );
   local extra_rules = std.get(spec, 'extra_rules', []);
@@ -124,7 +121,7 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
       },
       labels+: {
         'openshift.io/cluster-monitoring': 'true',
-        [if !isOpenshift then 'monitoring.syn.tools/infra']: 'true',
+        'monitoring.syn.tools/infra': 'true',
       },
     },
   },
