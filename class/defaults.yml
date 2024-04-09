@@ -12,7 +12,7 @@ parameters:
       blackbox_exporter:
         registry: docker.io
         image: prom/blackbox-exporter
-        tag: v0.24.0
+        tag: v0.25.0
       canary_scheduler_controller:
         registry: quay.io
         image: appuio/scheduler-canary-controller
