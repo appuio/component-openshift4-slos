@@ -72,20 +72,7 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
       metadata: {},
       spec: {
         affinity: {
-          nodeAffinity: {
-            requiredDuringSchedulingIgnoredDuringExecution: {
-              nodeSelectorTerms: [
-                {
-                  matchExpressions: [
-                    {
-                      key: 'node-role.kubernetes.io/app',
-                      operator: 'Exists',
-                    },
-                  ],
-                },
-              ],
-            },
-          },
+          nodeAffinity: params.canary_node_affinity,
         },
         containers: [
           {
