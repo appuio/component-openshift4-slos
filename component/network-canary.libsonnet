@@ -8,7 +8,7 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_slos;
 
-local isOpenshift = std.startsWith(inv.parameters.facts.distribution, 'openshift');
+local isOpenshift = std.member([ 'openshift4', 'oke' ], inv.parameters.facts.distribution);
 local splitNodeSelector = std.split(params.network_canary.nodeselector, '=');
 
 local ns = kube.Namespace(params.network_canary.namespace) {
@@ -18,7 +18,7 @@ local ns = kube.Namespace(params.network_canary.namespace) {
     },
     labels+: {
       'openshift.io/cluster-monitoring': 'true',
-      [if !isOpenshift then 'monitoring.syn.tools/infra']: 'true',
+      'monitoring.syn.tools/infra': 'true',
     },
   },
 };
