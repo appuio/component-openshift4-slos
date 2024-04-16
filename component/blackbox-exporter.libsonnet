@@ -126,6 +126,7 @@ local deploy = com.namespaced(
               },
             },
           ],
+          priorityClassName: 'system-cluster-critical',
           restartPolicy: 'Always',
           securityContext: {},
           serviceAccountName: sa.metadata.name,

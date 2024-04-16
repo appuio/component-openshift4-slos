@@ -81,6 +81,7 @@ spec:
           capabilities:
             drop:
             - ALL
+      priorityClassName: system-cluster-critical
       securityContext:
         runAsNonRoot: true
       serviceAccountName: scheduler-canary-controller-manager

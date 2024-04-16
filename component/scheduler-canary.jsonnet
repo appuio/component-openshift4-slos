@@ -10,6 +10,18 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift4_slos;
 
 
+local setPriorityClass = {
+  patch: |||
+    - op: add
+      path: "/spec/template/spec/priorityClassName"
+      value: "system-cluster-critical"
+  |||,
+  target: {
+    kind: 'Deployment',
+    name: 'scheduler-canary-controller-manager',
+  },
+};
+
 local kustomization =
   if params.canary_scheduler_controller.enabled then
     local image = params.images.canary_scheduler_controller;
@@ -22,7 +34,11 @@ local kustomization =
           newName: '%(registry)s/%(image)s' % image,
         },
       },
-      params.canary_scheduler_controller.kustomize_input,
+      params.canary_scheduler_controller.kustomize_input {
+        patches+: [
+          setPriorityClass,
+        ],
+      },
     )
   else {
     kustomization: { resources: [] },

@@ -84,6 +84,7 @@ spec:
               name: config
       imagePullSecrets: []
       initContainers: []
+      priorityClassName: system-cluster-critical
       restartPolicy: Always
       securityContext: {}
       serviceAccountName: prometheus-blackbox-exporter
