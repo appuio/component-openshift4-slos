@@ -42,6 +42,7 @@ spec:
           volumeMounts: []
       imagePullSecrets: []
       initContainers: []
+      priorityClassName: system-node-critical
       terminationGracePeriodSeconds: 30
       tolerations:
         - effect: NoSchedule

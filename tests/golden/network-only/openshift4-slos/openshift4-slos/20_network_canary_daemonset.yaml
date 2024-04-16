@@ -44,6 +44,7 @@ spec:
       initContainers: []
       nodeSelector:
         node-role.kubernetes.io/worker: 'true'
+      priorityClassName: system-node-critical
       securityContext:
         sysctls:
           - name: net.ipv4.ping_group_range

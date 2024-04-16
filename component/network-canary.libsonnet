@@ -60,6 +60,7 @@ local ds = kube.DaemonSet('network-canary') {
             value: '0 2147483647',
           } ],
         },
+        priorityClassName: 'system-node-critical',
         tolerations: std.objectValues(params.network_canary.tolerations),
       },
     },
