@@ -93,8 +93,10 @@ local defaultSlos = {
   },
   ingress: {
     local config = params.slos.ingress,
-    local os = com.getValueOrDefault(inv.parameters, 'openshift', {}),
-    local appsDomain = com.getValueOrDefault(os, 'appsDomain', ''),
+    local os = std.get(inv.parameters, 'openshift', {}),
+    // NOTE: appsDomain should always be present if we have parameter `openshift`.
+    local appsDomain = std.get(os, 'appsDomain', ''),
+    local canaryRoute = 'canary-openshift-ingress-canary.%s' % appsDomain,
 
     extra_rules: [
       {
@@ -111,14 +113,16 @@ local defaultSlos = {
           description: 'OpenShift ingress SLO based on canary availability',
           sli: {
             raw: {
-              error_ratio_query: '1 - avg_over_time(appuio_ocp4_slo:ingress_canary_route_reachable:no_instance[{{.window}}])',
+              error_ratio_query:
+                '1 - avg_over_time(appuio_ocp4_slo:ingress_canary_route_reachable:no_instance{%s}[{{.window}}])'
+                % [ if appsDomain != '' then 'host="%s"' % canaryRoute else '' ],
             },
           },
           alerting: {
             name: 'SLO_ClusterIngressFailure',
             annotations: {
               summary: 'Probes to ingress canary fail',
-              [if appsDomain != '' then 'canary_url']: 'canary-openshift-ingress-canary.%s' % appsDomain,
+              [if appsDomain != '' then 'canary_url']: canaryRoute,
             },
             page_alert: {},
             ticket_alert: {},
