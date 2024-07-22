@@ -194,3 +194,13 @@ parameters:
                   spec:
                     affinity:
                       nodeAffinity: ${openshift4_slos:controller_node_affinity}
+          # Use replace for CRDs to avoid errors because the
+          # last-applied-configuration annotation gets too big.
+          - patch: |-
+              $patch: merge
+              apiVersion: apiextensions.k8s.io/v1
+              kind: CustomResourceDefinition
+              metadata:
+                name: schedulercanaries.monitoring.appuio.io
+                annotations:
+                  argocd.argoproj.io/sync-options: Replace=true
