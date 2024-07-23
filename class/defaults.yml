@@ -16,7 +16,7 @@ parameters:
       canary_scheduler_controller:
         registry: quay.io
         image: appuio/scheduler-canary-controller
-        tag: v1.1.0
+        tag: v1.2.0
       canary:
         registry: docker.io
         image: curlimages/curl
