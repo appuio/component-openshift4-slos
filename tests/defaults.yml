@@ -84,3 +84,18 @@ parameters:
               staticConfig:
                 static:
                   - https://www.appuio.ch/
+
+    secrets:
+      canary-ssd-encrypted-luks-key:
+        stringData:
+          luksKey: XXXXXX
+
+    slos:
+      storage:
+        canary:
+          _sli:
+            volume_plugins:
+              "bulk": {}
+              "blub": null
+              "cephfs-fspool-cluster":
+                accessMode: ReadWriteMany

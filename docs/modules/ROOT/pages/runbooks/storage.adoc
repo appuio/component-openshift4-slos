@@ -65,3 +65,91 @@ slos:
 ----
 
 include::partial$runbooks/objective_change_warning.adoc[]
+
+[[canaries]]
+== Canaries
+
+=== icon:glasses[] Overview
+
+This SLO measures the percentage of pods timed out or failed during a complete lifecycle, measured while waiting for a canary pods.
+The Pod mounts a PVC and writes a file to it, then removes the file and the PVC.
+In the current implementation the image for the pod is pulled from the built-in OpenShift registry.
+
+include::partial$runbooks/alert_types.adoc[]
+
+=== icon:bug[] Steps for debugging
+
+An unschedulable storage canary workload can have more root causes than just a storage issue.
+
+First check the debugging section of the xref:runbooks/workload-schedulability.adoc#canary[Workload Schedulability - Canary] runbook.
+
+Check the output of the `kubectl describe` documented in the run book above for storage specific issues:
+
+[source]
+----
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedMount       47s                kubelet            MountVolume.SetUp failed for volume "pvc-d0fd0b25-60dc-47dd-9ec8-734941361dff" : mount failed: exit status 32
+Mounting command: mount
+Mounting arguments: -t nfs nfs-store3.example.ch:/srv/nfs/export/canary-nfs-pvc-d0fd0b25-60dc-47dd-9ec8-734941361dff /var/lib/kubelet/pods/9dbc5afa-5af1-4176-bc06-8a428a5448a8/volumes/kubernetes.io~nfs/pvc-d0fd0b25-60dc-47dd-9ec8-734941361dff
+Output: mount.nfs: Connection refused
+
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedMount       23m                kubelet            MountVolume.SetUp failed for volume "pvc-7681612b-9ac4-4cd6-867c-14c990351078" : mount failed: No space left on device
+----
+
+If the pod goes into a `Error` state you can check the logs of the pod with `kubectl logs`.
+
+[source,bash]
+----
+kubectl describe pods -A -l "scheduler-canary-controller.appuio.io/instance" | grep Error
+
+kubectl logs -n <namespace> <pod-name>
+----
+
+Check the PVC and PV status with `kubectl get pvc` and `kubectl get pv` and check the logs of the CSI plugin for more information.
+
+[source,bash]
+----
+# Extract the pod name and PVC name
+kubectl get pods -A -l "scheduler-canary-controller.appuio.io/instance" -o=jsonpath="{range .items[*]}{.metadata.name}{'\t'}{.spec.volumes[*].persistentVolumeClaim.claimName}{'\n'}{end}"
+
+# Check the PVC status
+kubectl describe pvc -n <namespace> <pvc-name>
+
+# Extract the PV name from the PVC
+kubectl get pvc -n <namespace> <pvc-name> -o=jsonpath="{.spec.volumeName}"
+# Check the PV status
+kubectl describe pv <pv-name>
+----
+
+include::partial$runbooks/wip_note.adoc[]
+
+=== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too late you may want to tune the SLO.
+
+You have the option tune the SLO through the component parameters.
+You can modify the objective, disable the page or ticket alert, restrict the SLO to certain storage operations or volume plugins, or completely disable the SLO.
+
+The example below will set the SLO set the objective to 97.00%, disable the page alert, and only consider the Syn-managed CephFS storage provider.
+This means this SLO won't alert on-call anymore and won't alert if there are issues with CSI plugins other than the Syn-managed CephFS CSI plugin.
+
+[source,yaml]
+----
+slos:
+  storage:
+    canary:
+      objective: 99.0
+      _sli:
+        volume_plugins:
+          # Disable default storage class canary
+          "": null
+          # Enable Syn-managed CephFS canary
+          cephfs-fspool-cluster: {}
+----
+
+include::partial$runbooks/objective_change_warning.adoc[]
