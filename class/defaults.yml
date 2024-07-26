@@ -52,6 +52,19 @@ parameters:
           _sli:
             volume_plugin: "kubernetes.io/csi.+"
             operation_name: ".+"
+        canary:
+          enabled: true
+          objective: 99.0
+          _sli:
+            volume_plugins_default_params:
+              size: 1Gi
+              accessMode: ReadWriteOnce
+              interval: 1m
+              maxPodCompletionTimeout: 3m
+
+            volume_plugins:
+              # Empty value for the default plugin
+              "": {}
       ingress:
         canary:
           enabled: true
@@ -75,6 +88,8 @@ parameters:
           objective: 99.5
 
     specs: {}
+
+    secrets: {}
 
     controller_node_affinity:
       requiredDuringSchedulingIgnoredDuringExecution:

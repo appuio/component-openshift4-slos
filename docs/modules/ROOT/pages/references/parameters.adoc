@@ -28,6 +28,28 @@ Sloth isn't actually deployed to the cluster, but used to render `PrometheusRule
 The entry in `images` allows Renovate to create version upgrade PRs.
 The Sloth version can be overridden by the `tag` parameter.
 
+
+== `secrets`
+
+[horizontal]
+type:: dictionary
+default:: `{}`
+example::
++
+[source,yaml]
+----
+secrets:
+  canary-ssd-encrypted-luks-key:
+    stringData:
+      luksKey: XXXXXX
+----
+
+This parameter allows creating arbitrary `Secret` resources.
+
+The dictionary keys are used as `metadata.name` for the resulting `Secret` resources.
+The secrets are created in the namespace indicated by parameter `namespace`.
+
+
 == `slos`
 
 [horizontal]
@@ -51,7 +73,7 @@ csi-operations:
     operation_name: ".+"
 ----
 
-The configuration for the csi-operations SLO.
+The configuration for the csi-operations storage SLO.
 
 The SLO can be disabled by setting `enabled` to false.
 
@@ -61,6 +83,60 @@ The fields can contain an arbitrary https://prometheus.io/docs/prometheus/latest
 Any additional field is added directly to the `slo` input for sloth.
 
 NOTE: Look at xref:runbooks/storage.adoc#csi-operations[the runbook] for an explanation of this SLO.
+
+=== `slos.storage.canary`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source,yaml]
+----
+canary:
+  enabled: true
+  objective: 99.0
+  _sli:
+    volume_plugins_default_params:
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      interval: 1m
+      maxPodCompletionTimeout: 3m
+
+    volume_plugins:
+      # Empty value for the default plugin
+      "": {}
+----
+example::
++
+[source,yaml]
+----
+canary:
+  enabled: true
+  objective: 99.0
+  _sli:
+    volume_plugins:
+      # Disable the canary for the default storage class
+      "": null
+      # Enable the canaries for ssd and bulk storage classes
+      ssd: {}
+      bulk:
+        size: 10Gi
+----
+
+The configuration for the canary storage SLO.
+
+The SLO can be disabled by setting `enabled` to false.
+
+The canary SLO is tested by creating a PVC for every configured storage class and periodically running a pod that writes and deletes a file on the respective PVC.
+You can configure which volume plugins are tested with `_sli.volume_plugins`.
+The key is the storage class name and the value is a dictionary which can override the default parameters set in `volume_plugins_default_params`.
+An empty key (`""`) is used for the default storage class.
+The value can be set to `null` to disable the canary for a specific storage class.
+
+Any additional field is added directly to the `slo` input for sloth.
+
+NOTE: Look at xref:runbooks/storage.adoc#canaries[the runbook] for an explanation of this SLO.
+
 
 === `slos.kubernetes_api.requests`
 

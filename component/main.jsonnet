@@ -100,6 +100,90 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
   },
 };
 
+local storageCanaries = std.flattenArrays(std.filterMap(
+  function(storageclass) params.slos.storage.canary._sli.volume_plugins[storageclass] != null,
+  function(storageclass)
+    local p = params.slos.storage.canary._sli.volume_plugins_default_params + com.makeMergeable(params.slos.storage.canary._sli.volume_plugins[storageclass]);
+    local manifestName = 'storage-canary-%s' % if storageclass == '' then 'default' else storageclass;
+    [
+      kube.PersistentVolumeClaim(manifestName) {
+        metadata+: {
+          namespace: params.namespace,
+        },
+        spec+: {
+          accessModes: [ p.accessMode ],
+          resources: {
+            requests: {
+              storage: p.size,
+            },
+          },
+          [if storageclass != '' then 'storageClassName']: storageclass,
+        },
+      },
+      kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', manifestName) {
+        metadata+: {
+          namespace: params.namespace,
+        },
+        spec: {
+          interval: p.interval,
+          maxPodCompletionTimeout: p.maxPodCompletionTimeout,
+          forbidParallelRuns: true,
+          podTemplate: {
+            metadata: {},
+            spec: {
+              affinity: {
+                nodeAffinity: params.canary_node_affinity,
+              },
+              containers: [
+                {
+                  command: [
+                    'sh',
+                    '-c',
+                  ],
+                  args: [
+                    std.join(';\n', [
+                      'set -euo pipefail',
+                      'f="/testmount/t-`date -Iseconds`"',
+                      'echo test > "$f"',
+                      'test `cat "$f"` = "test"',
+                      'rm -f "$f"',
+                    ]),
+                  ],
+                  image: 'image-registry.openshift-image-registry.svc:5000/%s/%s:latest' % [ canaryImageStream.metadata.namespace, canaryImageStream.metadata.name ],
+                  imagePullPolicy: 'Always',
+                  name: 'storage',
+                  resources: {},
+                  terminationMessagePath: '/dev/termination-log',
+                  terminationMessagePolicy: 'File',
+                  volumeMounts: [
+                    {
+                      mountPath: '/testmount',
+                      name: 'test',
+                    },
+                  ],
+                },
+              ],
+              volumes: [
+                {
+                  name: 'test',
+                  persistentVolumeClaim: {
+                    claimName: manifestName,
+                  },
+                },
+              ],
+              restartPolicy: 'Never',
+              schedulerName: 'default-scheduler',
+              securityContext: {},
+              terminationGracePeriodSeconds: 10,
+            },
+          },
+        },
+      },
+    ]
+  ,
+  std.objectFields(params.slos.storage.canary._sli.volume_plugins)
+));
+
 {
   '00_namespace': kube.Namespace(params.namespace) {
     metadata+: {
@@ -112,8 +196,10 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
       },
     },
   },
+  '10_secrets': com.generateResources(params.secrets, function(name) com.namespaced(params.namespace, kube.Secret(name))),
   [if params.canary_scheduler_controller.enabled then '30_canaryImageStream']: canaryImageStream,
   [if params.canary_scheduler_controller.enabled then '30_canary']: canary,
+  [if params.canary_scheduler_controller.enabled then '32_storageCanary']: storageCanaries,
 }
 + blackbox.deployment
 + blackbox.probes

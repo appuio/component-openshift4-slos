@@ -30,8 +30,8 @@ local defaultSlos = {
           sli: {
             events: {
               local queryParams = { namespace: params.namespace },
-              error_query: 'sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="%(namespace)s",reason="timed_out"}[{{.window}}]))' % queryParams,
-              total_query: 'sum by (name) (rate(scheduler_canary_pod_until_completed_seconds_count{exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
+              error_query: 'sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="canary",exported_namespace="%(namespace)s",reason!="completed"}[{{.window}}]))' % queryParams,
+              total_query: 'sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="canary",exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
             },
           },
           alerting: {
@@ -52,43 +52,75 @@ local defaultSlos = {
     sloth_input: {
       version: 'prometheus/v1',
       service: 'storage',
-      _slos: {
-        'csi-operations': {
-          description: 'SLO based on number of failed csi operations',
-          sli: {
-            events: {
-              // We use `or on() vector(0)` here to ensure we always have a
-              // value for the error query, even if there's 0 failing storage
-              // operations in a time window. This is necessary because the
-              // timeseries for status="fail-unknown" may not exist at all if
-              // there's no failures.
-              error_query:
-                'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s",status="fail-unknown"}[{{.window}}])) or on() vector(0)'
-                % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
-              total_query:
-                // We use (sum() > 0) or on() vector(1)) to guard against time
-                // windows where we have 0 storage operations, which would
-                // otherwise result in a division by 0. We do this because,
-                // dividing by 0 results in the whole expression evaluating to
-                // NaN which breaks the SLO alert.
-                // Note that we can safely divide by 1, since there can't be
-                // any failed operations when there's no operations at all, so
-                // if the `vector(1)` is used, the expression will always
-                // reduce to 0/1.
-                '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s"}[{{.window}}])) > 0) or on() vector(1)' %
-                [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
-            },
+      _slos: std.foldl(
+        function(prev, plugin)
+          local storageClassName = if plugin == '' then 'default' else plugin;
+          local canaryName = 'storage-canary-%s' % storageClassName;
+          prev {
+            [canaryName]: {
+              description: 'OpenShift workload schedulability SLO based on github.com/appuio/scheduler-canary-controller canary',
+              sli: {
+                events: {
+                  local queryParams = { name: canaryName, namespace: params.namespace },
+                  error_query: 'sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="%(name)s",exported_namespace="%(namespace)s",reason!="completed"}[{{.window}}]))' % queryParams,
+                  total_query: 'sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="%(name)s",exported_namespace="%(namespace)s"}[{{.window}}]))' % queryParams,
+                },
+              },
+              alerting: {
+                name: 'SLO_StorageCanaryWorkloadTimesOut',
+                annotations: {
+                  summary: 'Storage canary workloads time out.',
+                },
+                labels: {
+                  storageclass: storageClassName,
+                },
+                page_alert: {},
+                ticket_alert: {},
+              },
+            } + config.canary,
           },
-          alerting: {
-            name: 'SLO_StorageOperationHighErrorRate',
-            annotations: {
-              summary: 'High storage operation error rate',
+        std.filter(
+          function(plugin) config.canary._sli.volume_plugins[plugin] != null,
+          std.objectFields(config.canary._sli.volume_plugins)
+        ),
+        {
+          'csi-operations': {
+            description: 'SLO based on number of failed csi operations',
+            sli: {
+              events: {
+                // We use `or on() vector(0)` here to ensure we always have a
+                // value for the error query, even if there's 0 failing storage
+                // operations in a time window. This is necessary because the
+                // timeseries for status="fail-unknown" may not exist at all if
+                // there's no failures.
+                error_query:
+                  'sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s",status="fail-unknown"}[{{.window}}])) or on() vector(0)'
+                  % [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
+                total_query:
+                  // We use (sum() > 0) or on() vector(1)) to guard against time
+                  // windows where we have 0 storage operations, which would
+                  // otherwise result in a division by 0. We do this because,
+                  // dividing by 0 results in the whole expression evaluating to
+                  // NaN which breaks the SLO alert.
+                  // Note that we can safely divide by 1, since there can't be
+                  // any failed operations when there's no operations at all, so
+                  // if the `vector(1)` is used, the expression will always
+                  // reduce to 0/1.
+                  '(sum(rate(storage_operation_duration_seconds_count{volume_plugin=~"%s",operation_name=~"%s"}[{{.window}}])) > 0) or on() vector(1)' %
+                  [ config['csi-operations']._sli.volume_plugin, config['csi-operations']._sli.operation_name ],
+              },
             },
-            page_alert: {},
-            ticket_alert: {},
-          },
-        } + config['csi-operations'],
-      },
+            alerting: {
+              name: 'SLO_StorageOperationHighErrorRate',
+              annotations: {
+                summary: 'High storage operation error rate',
+              },
+              page_alert: {},
+              ticket_alert: {},
+            },
+          } + config['csi-operations'],
+        }
+      ),
     },
   },
   ingress: {

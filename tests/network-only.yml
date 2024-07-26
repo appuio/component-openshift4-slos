@@ -4,6 +4,8 @@ parameters:
   openshift4_slos:
     slos:
       storage:
+        canary:
+          enabled: false
         csi-operations:
           enabled: false
       ingress:

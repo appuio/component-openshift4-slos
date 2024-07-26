@@ -195,3 +195,570 @@ spec:
             sloth_severity: ticket
             syn: 'true'
             syn_component: openshift4-slos
+    - name: sloth-slo-sli-recordings-storage-storage-canary-bulk
+      rules:
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[5m])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[5m])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[30m])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[30m])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[1h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[1h])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[2h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[2h])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[6h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[6h])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[1d])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[1d])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos",reason!="completed"}[3d])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-bulk",exported_namespace="appuio-openshift4-slos"}[3d])))
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: |
+            sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"}[30d])
+            / ignoring (sloth_window)
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"}[30d])
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-storage-storage-canary-bulk
+      rules:
+        - expr: vector(0.99)
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+          record: slo:objective:ratio
+        - expr: vector(1-0.99)
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+          record: slo:time_period:days
+        - expr: |
+            slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"}
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+            slo:error_budget:ratio{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"}
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+          record: slo:current_burn_rate:ratio
+        - expr: |
+            slo:sli_error:ratio_rate30d{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"}
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+            slo:error_budget:ratio{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"}
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="storage-storage-canary-bulk",
+            sloth_service="storage", sloth_slo="storage-canary-bulk"}
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            sloth_id: storage-storage-canary-bulk
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99'
+            sloth_service: storage
+            sloth_slo: storage-canary-bulk
+            sloth_spec: prometheus/v1
+            sloth_version: v0.11.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-storage-storage-canary-bulk
+      rules:
+        - alert: SLO_StorageCanaryWorkloadTimesOut
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/storage.html#storage-canary-bulk
+            summary: Storage canary workloads time out.
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (14.4 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1h{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (14.4 * 0.01)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate30m{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (6 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate6h{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (6 * 0.01)) without (sloth_window)
+            )
+          labels:
+            severity: critical
+            slo: 'true'
+            sloth_severity: page
+            storageclass: bulk
+            syn: 'true'
+            syn_component: openshift4-slos
+        - alert: SLO_StorageCanaryWorkloadTimesOut
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/storage.html#storage-canary-bulk
+            summary: Storage canary workloads time out.
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate2h{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (3 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1d{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (3 * 0.01)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate6h{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (1 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate3d{sloth_id="storage-storage-canary-bulk", sloth_service="storage", sloth_slo="storage-canary-bulk"} > (1 * 0.01)) without (sloth_window)
+            )
+          labels:
+            severity: warning
+            slo: 'true'
+            sloth_severity: ticket
+            storageclass: bulk
+            syn: 'true'
+            syn_component: openshift4-slos
+    - name: sloth-slo-sli-recordings-storage-storage-canary-cephfs-fspool-cluster
+      rules:
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[5m])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[5m])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[30m])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[30m])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[1h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[1h])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[2h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[2h])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[6h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[6h])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[1d])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[1d])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos",reason!="completed"}[3d])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-cephfs-fspool-cluster",exported_namespace="appuio-openshift4-slos"}[3d])))
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: |
+            sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}[30d])
+            / ignoring (sloth_window)
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}[30d])
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-storage-storage-canary-cephfs-fspool-cluster
+      rules:
+        - expr: vector(0.99)
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+          record: slo:objective:ratio
+        - expr: vector(1-0.99)
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+          record: slo:time_period:days
+        - expr: |
+            slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+            slo:error_budget:ratio{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+          record: slo:current_burn_rate:ratio
+        - expr: |
+            slo:sli_error:ratio_rate30d{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+            slo:error_budget:ratio{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="storage-storage-canary-cephfs-fspool-cluster",
+            sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"}
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            sloth_id: storage-storage-canary-cephfs-fspool-cluster
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99'
+            sloth_service: storage
+            sloth_slo: storage-canary-cephfs-fspool-cluster
+            sloth_spec: prometheus/v1
+            sloth_version: v0.11.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-storage-storage-canary-cephfs-fspool-cluster
+      rules:
+        - alert: SLO_StorageCanaryWorkloadTimesOut
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/storage.html#storage-canary-cephfs-fspool-cluster
+            summary: Storage canary workloads time out.
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (14.4 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1h{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (14.4 * 0.01)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate30m{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (6 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate6h{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (6 * 0.01)) without (sloth_window)
+            )
+          labels:
+            severity: critical
+            slo: 'true'
+            sloth_severity: page
+            storageclass: cephfs-fspool-cluster
+            syn: 'true'
+            syn_component: openshift4-slos
+        - alert: SLO_StorageCanaryWorkloadTimesOut
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/storage.html#storage-canary-cephfs-fspool-cluster
+            summary: Storage canary workloads time out.
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate2h{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (3 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1d{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (3 * 0.01)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate6h{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (1 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate3d{sloth_id="storage-storage-canary-cephfs-fspool-cluster", sloth_service="storage", sloth_slo="storage-canary-cephfs-fspool-cluster"} > (1 * 0.01)) without (sloth_window)
+            )
+          labels:
+            severity: warning
+            slo: 'true'
+            sloth_severity: ticket
+            storageclass: cephfs-fspool-cluster
+            syn: 'true'
+            syn_component: openshift4-slos
+    - name: sloth-slo-sli-recordings-storage-storage-canary-default
+      rules:
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[5m])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[5m])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 5m
+          record: slo:sli_error:ratio_rate5m
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[30m])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[30m])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 30m
+          record: slo:sli_error:ratio_rate30m
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[1h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[1h])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 1h
+          record: slo:sli_error:ratio_rate1h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[2h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[2h])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 2h
+          record: slo:sli_error:ratio_rate2h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[6h])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[6h])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 6h
+          record: slo:sli_error:ratio_rate6h
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[1d])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[1d])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 1d
+          record: slo:sli_error:ratio_rate1d
+        - expr: |
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos",reason!="completed"}[3d])))
+            /
+            (sum(rate(scheduler_canary_pod_until_completed_seconds_count{name="storage-canary-default",exported_namespace="appuio-openshift4-slos"}[3d])))
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 3d
+          record: slo:sli_error:ratio_rate3d
+        - expr: |
+            sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"}[30d])
+            / ignoring (sloth_window)
+            count_over_time(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"}[30d])
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_window: 30d
+          record: slo:sli_error:ratio_rate30d
+    - name: sloth-slo-meta-recordings-storage-storage-canary-default
+      rules:
+        - expr: vector(0.99)
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+          record: slo:objective:ratio
+        - expr: vector(1-0.99)
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+          record: slo:error_budget:ratio
+        - expr: vector(30)
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+          record: slo:time_period:days
+        - expr: |
+            slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"}
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+            slo:error_budget:ratio{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"}
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+          record: slo:current_burn_rate:ratio
+        - expr: |
+            slo:sli_error:ratio_rate30d{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"}
+            / on(sloth_id, sloth_slo, sloth_service) group_left
+            slo:error_budget:ratio{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"}
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+          record: slo:period_burn_rate:ratio
+        - expr: 1 - slo:period_burn_rate:ratio{sloth_id="storage-storage-canary-default",
+            sloth_service="storage", sloth_slo="storage-canary-default"}
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+          record: slo:period_error_budget_remaining:ratio
+        - expr: vector(1)
+          labels:
+            sloth_id: storage-storage-canary-default
+            sloth_mode: cli-gen-prom
+            sloth_objective: '99'
+            sloth_service: storage
+            sloth_slo: storage-canary-default
+            sloth_spec: prometheus/v1
+            sloth_version: v0.11.0
+          record: sloth_slo_info
+    - name: sloth-slo-alerts-storage-storage-canary-default
+      rules:
+        - alert: SLO_StorageCanaryWorkloadTimesOut
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/storage.html#storage-canary-default
+            summary: Storage canary workloads time out.
+            title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate5m{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (14.4 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1h{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (14.4 * 0.01)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate30m{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (6 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate6h{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (6 * 0.01)) without (sloth_window)
+            )
+          labels:
+            severity: critical
+            slo: 'true'
+            sloth_severity: page
+            storageclass: default
+            syn: 'true'
+            syn_component: openshift4-slos
+        - alert: SLO_StorageCanaryWorkloadTimesOut
+          annotations:
+            runbook_url: https://hub.syn.tools/openshift4-slos/runbooks/storage.html#storage-canary-default
+            summary: Storage canary workloads time out.
+            title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error
+              budget burn rate is too fast.
+          expr: |
+            (
+                max(slo:sli_error:ratio_rate2h{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (3 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate1d{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (3 * 0.01)) without (sloth_window)
+            )
+            or
+            (
+                max(slo:sli_error:ratio_rate6h{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (1 * 0.01)) without (sloth_window)
+                and
+                max(slo:sli_error:ratio_rate3d{sloth_id="storage-storage-canary-default", sloth_service="storage", sloth_slo="storage-canary-default"} > (1 * 0.01)) without (sloth_window)
+            )
+          labels:
+            severity: warning
+            slo: 'true'
+            sloth_severity: ticket
+            storageclass: default
+            syn: 'true'
+            syn_component: openshift4-slos
