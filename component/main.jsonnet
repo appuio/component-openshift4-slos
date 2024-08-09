@@ -199,7 +199,7 @@ local storageCanaries = std.flattenArrays(std.filterMap(
   '10_secrets': com.generateResources(params.secrets, function(name) com.namespaced(params.namespace, kube.Secret(name))),
   [if params.canary_scheduler_controller.enabled then '30_canaryImageStream']: canaryImageStream,
   [if params.canary_scheduler_controller.enabled then '30_canary']: canary,
-  [if params.canary_scheduler_controller.enabled then '32_storageCanary']: storageCanaries,
+  [if params.canary_scheduler_controller.enabled && params.slos.storage.canary.enabled then '32_storageCanary']: storageCanaries,
 }
 + blackbox.deployment
 + blackbox.probes
