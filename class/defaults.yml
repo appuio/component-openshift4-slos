@@ -1,6 +1,7 @@
 parameters:
   openshift4_slos:
-    =_metadata: {}
+    =_metadata:
+      multi_tenant: true
     namespace: appuio-openshift4-slos
 
     images:
