@@ -30,7 +30,7 @@ spec:
         - --upstream=http://127.0.0.1:8080/
         - --logtostderr=true
         - --v=0
-        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.13.0
+        image: quay.io/brancz/kube-rbac-proxy:v0.18.2
         name: kube-rbac-proxy
         ports:
         - containerPort: 8443
@@ -54,7 +54,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: quay.io/appuio/scheduler-canary-controller:v1.2.0
+        image: quay.io/appuio/scheduler-canary-controller:v1.2.1
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
