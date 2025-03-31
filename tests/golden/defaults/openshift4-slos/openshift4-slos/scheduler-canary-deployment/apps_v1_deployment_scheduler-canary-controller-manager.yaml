@@ -54,7 +54,7 @@ spec:
         - --leader-elect
         command:
         - /manager
-        image: quay.io/appuio/scheduler-canary-controller:v1.2.1
+        image: quay.io/appuio/scheduler-canary-controller:v1.2.3
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
