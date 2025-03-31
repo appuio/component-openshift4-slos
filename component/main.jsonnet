@@ -69,7 +69,11 @@ local canary = kube._Object('monitoring.appuio.io/v1beta1', 'SchedulerCanary', '
     interval: sliConfig.podStartInterval,
     maxPodCompletionTimeout: sliConfig.overallPodTimeout,
     podTemplate: {
-      metadata: {},
+      metadata: {
+        annotations: {
+          'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',
+        },
+      },
       spec: {
         affinity: {
           nodeAffinity: params.canary_node_affinity,
@@ -129,7 +133,11 @@ local storageCanaries = std.flattenArrays(std.filterMap(
           maxPodCompletionTimeout: p.maxPodCompletionTimeout,
           forbidParallelRuns: true,
           podTemplate: {
-            metadata: {},
+            metadata: {
+              annotations: {
+                'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',
+              },
+            },
             spec: {
               affinity: {
                 nodeAffinity: params.canary_node_affinity,
