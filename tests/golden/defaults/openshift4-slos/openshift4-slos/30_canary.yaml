@@ -10,7 +10,9 @@ spec:
   interval: 1m
   maxPodCompletionTimeout: 3m
   podTemplate:
-    metadata: {}
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
     spec:
       affinity:
         nodeAffinity:
