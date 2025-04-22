@@ -19,6 +19,47 @@ local params = inv.parameters.openshift4_slos;
 // corresponding SLO's definition. The contents of this field are added to the
 // resulting PrometheusRule object as an extra rule group (cf. main.jsonnet).
 local defaultSlos = {
+  customer_facing_beta: {
+    local config = params.slos['customer-facing-beta'],
+
+    extra_rules: [
+      {
+        record: 'appuio_ocp4_slo:customer_facing_slo_ingress:error',
+        expr: |||
+          absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time((ingress_canary_route_reachable >0)[3m:])
+        |||,
+      },
+    ],
+
+    sloth_input: {
+      version: 'prometheus/v1',
+      service: 'customer-facing-beta',
+      _slos: {
+        ingress: {
+          description: |||
+            [BETA] Customer facing ingress SLO based on the availability of the ingress.
+
+            NO successful request and NO successful canary request over a period of 3 minutes starts counting to the error budget.
+
+            See https://kb.vshn.ch/oc4/explanations/decisions/customer-facing-slo.html
+          |||,
+          sli: {
+            raw: {
+              error_ratio_query:
+                '1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[{{.window}}])',
+            },
+          },
+
+          alerting: {
+            name: 'SLO_CustomerFacingBetaIngressFailure',
+            page_alert: {},
+            ticket_alert: {},
+          },
+        } + config.ingress,
+      },
+    },
+  },
+
   'workload-schedulability': {
     local config = params.slos['workload-schedulability'],
     sloth_input: {
