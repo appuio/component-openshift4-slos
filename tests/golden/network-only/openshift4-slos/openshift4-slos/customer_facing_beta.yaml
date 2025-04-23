@@ -10,49 +10,49 @@ spec:
   groups:
     - name: sloth-slo-sli-recordings-customer-facing-beta-ingress
       rules:
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[5m]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[5m]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_window: 5m
           record: slo:sli_error:ratio_rate5m
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[30m]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[30m]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_window: 30m
           record: slo:sli_error:ratio_rate30m
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[1h]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[1h]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_window: 1h
           record: slo:sli_error:ratio_rate1h
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[2h]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[2h]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_window: 2h
           record: slo:sli_error:ratio_rate2h
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[6h]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[6h]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_window: 6h
           record: slo:sli_error:ratio_rate6h
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[1d]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[1d]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_window: 1d
           record: slo:sli_error:ratio_rate1d
-        - expr: (1 - avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[3d]))
+        - expr: (avg_over_time(appuio_ocp4_slo:customer_facing_slo_ingress:error[3d]))
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
@@ -179,5 +179,7 @@ spec:
     - name: syn-sloth-slo-customer_facing_beta-extra-rules
       rules:
         - expr: |
-            absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time((ingress_canary_route_reachable >0)[3m:])
+            (
+              absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time((ingress_canary_route_reachable > 0)[3m:])
+            ) OR vector(0)
           record: appuio_ocp4_slo:customer_facing_slo_ingress:error
