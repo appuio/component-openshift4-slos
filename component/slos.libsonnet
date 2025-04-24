@@ -27,7 +27,7 @@ local defaultSlos = {
         record: 'appuio_ocp4_slo:customer_facing_slo_ingress:error',
         expr: |||
           (
-            absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time((ingress_canary_route_reachable > 0)[3m:])
+            absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time(group(ingress_canary_route_reachable > 0)[3m:])
           ) OR vector(0)
         |||,
       },

@@ -49,7 +49,7 @@ parameters:
       customer-facing-beta:
         ingress:
           enabled: true
-          objective: 99.5
+          objective: 99.9
 
       storage:
         csi-operations:

@@ -71,13 +71,13 @@ spec:
           record: slo:sli_error:ratio_rate30d
     - name: sloth-slo-meta-recordings-customer-facing-beta-ingress
       rules:
-        - expr: vector(0.995)
+        - expr: vector(0.9990000000000001)
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
             sloth_slo: ingress
           record: slo:objective:ratio
-        - expr: vector(1-0.995)
+        - expr: vector(1-0.9990000000000001)
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_service: customer-facing-beta
@@ -118,7 +118,7 @@ spec:
           labels:
             sloth_id: customer-facing-beta-ingress
             sloth_mode: cli-gen-prom
-            sloth_objective: '99.5'
+            sloth_objective: '99.9'
             sloth_service: customer-facing-beta
             sloth_slo: ingress
             sloth_spec: prometheus/v1
@@ -135,15 +135,15 @@ spec:
               budget burn rate is too fast.
           expr: |
             (
-                max(slo:sli_error:ratio_rate5m{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (14.4 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate5m{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (14.4 * 0.0009999999999999432)) without (sloth_window)
                 and
-                max(slo:sli_error:ratio_rate1h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (14.4 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate1h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (14.4 * 0.0009999999999999432)) without (sloth_window)
             )
             or
             (
-                max(slo:sli_error:ratio_rate30m{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (6 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate30m{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (6 * 0.0009999999999999432)) without (sloth_window)
                 and
-                max(slo:sli_error:ratio_rate6h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (6 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate6h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (6 * 0.0009999999999999432)) without (sloth_window)
             )
           labels:
             severity: critical
@@ -160,15 +160,15 @@ spec:
               budget burn rate is too fast.
           expr: |
             (
-                max(slo:sli_error:ratio_rate2h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (3 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate2h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (3 * 0.0009999999999999432)) without (sloth_window)
                 and
-                max(slo:sli_error:ratio_rate1d{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (3 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate1d{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (3 * 0.0009999999999999432)) without (sloth_window)
             )
             or
             (
-                max(slo:sli_error:ratio_rate6h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (1 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate6h{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (1 * 0.0009999999999999432)) without (sloth_window)
                 and
-                max(slo:sli_error:ratio_rate3d{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (1 * 0.005)) without (sloth_window)
+                max(slo:sli_error:ratio_rate3d{sloth_id="customer-facing-beta-ingress", sloth_service="customer-facing-beta", sloth_slo="ingress"} > (1 * 0.0009999999999999432)) without (sloth_window)
             )
           labels:
             severity: warning
@@ -180,6 +180,6 @@ spec:
       rules:
         - expr: |
             (
-              absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time((ingress_canary_route_reachable > 0)[3m:])
+              absent_over_time((sum(rate(haproxy_frontend_http_responses_total{code=~"[1-4]xx"}[1m])) > 0)[3m:]) AND absent_over_time(group(ingress_canary_route_reachable > 0)[3m:])
             ) OR vector(0)
           record: appuio_ocp4_slo:customer_facing_slo_ingress:error
