@@ -46,6 +46,11 @@ parameters:
             podStartInterval: 1m
             overallPodTimeout: 3m
 
+      customer-facing-beta:
+        ingress:
+          enabled: true
+          objective: 99.9
+
       storage:
         csi-operations:
           enabled: true
