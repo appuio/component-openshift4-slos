@@ -7,5 +7,6 @@
 ** xref:runbooks/network.adoc[Network SLOs]
 ** xref:runbooks/workload-schedulability.adoc[Workload SLOs]
 ** xref:runbooks/storage.adoc[Storage SLOs]
+** xref:runbooks/customer_facing.adoc[]
 
 * xref:explanations/improving-slos.adoc[Improving SLOs]

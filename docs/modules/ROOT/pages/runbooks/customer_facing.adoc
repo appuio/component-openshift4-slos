@@ -1,0 +1,25 @@
+= Customer Facing SLO
+:page-aliases: runbooks/customer_facing_beta.adoc
+
+The SLO which forms the basis for the agreed cluster SLA for Managed Openshift customers.
+
+[NOTE]
+====
+We've tested this SLO for a while, but there might still be intermittent false positive alerts.
+
+The long-term data in our central metrics storage doesn't show any false positives, but there were a number of short-lived alerts sent directly from clusters during the initial testing phase.
+Unfortunately, none of these alerts were recent enough to determine why they were triggered, since we don't have very high metrics retentions on the clusters.
+
+Despite this, we feel that the SLO is good enough to remove the explicit BETA label.
+====
+
+include::partial$runbooks/contribution_note.adoc[]
+
+[[ingress]]
+== Cluster Ingress
+
+This SLI is a combination of the xref:runbooks/ingress.adoc#canary[Ingress Canary] and OpenShift Ingress HAProxy metrics.
+
+Every three minutes without a successful canary request and without a successful request to customer ingress backends is counted to the error budget.
+
+See xref:runbooks/ingress.adoc[] for all debugging and tuning information.
