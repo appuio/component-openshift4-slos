@@ -57,7 +57,7 @@ type:: dictionary
 
 The configuration option of all default SLOs for the APPUiO Managed OpenShift product.
 
-=== `slos.customer-facing-beta.ingress`
+=== `slos.customer-facing.ingress`
 
 [horizontal]
 type:: dictionary
@@ -65,14 +65,13 @@ default::
 +
 [source,yaml]
 ----
-customer-facing-beta:
+customer-facing:
   ingress:
     enabled: true
     objective: 99.9
 ----
 
 The configuration for a customer-facing ingress SLO.
-This SLO is currently in beta to gather real world data.
 
 The SLO can be disabled by setting `enabled` to false.
 
