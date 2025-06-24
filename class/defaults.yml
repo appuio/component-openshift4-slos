@@ -46,7 +46,7 @@ parameters:
             podStartInterval: 1m
             overallPodTimeout: 3m
 
-      customer-facing-beta:
+      customer-facing:
         ingress:
           enabled: true
           objective: 99.9

@@ -19,8 +19,17 @@ local params = inv.parameters.openshift4_slos;
 // corresponding SLO's definition. The contents of this field are added to the
 // resulting PrometheusRule object as an extra rule group (cf. main.jsonnet).
 local defaultSlos = {
-  customer_facing_beta: {
-    local config = params.slos['customer-facing-beta'],
+  customer_facing: {
+    local beta_config =
+      if std.objectHas(params.slos, 'customer-facing-beta') then
+        std.trace(
+          'please migrate your SLO config from `customer-facing-beta` to `customer-facing`!',
+          params.slos['customer-facing-beta']
+        )
+      else
+        {},
+    local config =
+      params.slos['customer-facing'] + com.makeMergeable(beta_config),
 
     extra_rules: [
       {
@@ -35,11 +44,11 @@ local defaultSlos = {
 
     sloth_input: {
       version: 'prometheus/v1',
-      service: 'customer-facing-beta',
+      service: 'customer-facing',
       _slos: {
         ingress: {
           description: |||
-            [BETA] Customer facing ingress SLO based on the availability of the ingress.
+            Customer facing ingress SLO based on the availability of the ingress.
 
             NO successful request and NO successful canary request over a period of 3 minutes starts counting to the error budget.
 
@@ -53,7 +62,7 @@ local defaultSlos = {
           },
 
           alerting: {
-            name: 'SLO_CustomerFacingBetaIngressFailure',
+            name: 'SLO_CustomerFacingIngressFailure',
             page_alert: {},
             ticket_alert: {},
           },
