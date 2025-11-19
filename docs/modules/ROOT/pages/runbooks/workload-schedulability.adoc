@@ -60,7 +60,7 @@ Allocatable resources can be checked with the `kubectl describe nodes` output.
 
 [source,bash]
 ----
-kubectl --as=cluster-admin describe nodes -l node-role.kubernetes.io/app=
+kubectl --as=system:admin describe nodes -l node-role.kubernetes.io/app=
 [...]
 Allocatable:
   cpu:                3500m
