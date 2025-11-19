@@ -65,7 +65,7 @@ If the canary doesn't log anything unusual, the next step is to reproduce the pa
 
 [source, shell]
 ----
-kubectl --as cluster-admin -n appuio-network-canary debug -it -c debugger --image=ubuntu ${CANARY_POD}
+kubectl --as=system:admin -n appuio-network-canary debug -it -c debugger --image=ubuntu ${CANARY_POD}
 
 > apt update
 > apt install iputils-ping
@@ -88,7 +88,7 @@ Connect to one of the affected source node and ping a target node.
 
 [source, shell]
 ----
-oc --as=cluster-admin -n syn-debug-nodes debug "node/${nodename}"
+oc --as=system:admin -n syn-debug-nodes debug "node/${nodename}"
 
 > chroot /host
 > ping ${TARGET_NODE_IP}
