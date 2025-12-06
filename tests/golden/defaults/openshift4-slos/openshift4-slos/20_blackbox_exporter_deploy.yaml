@@ -55,7 +55,7 @@ spec:
         - args:
             - --config.file=/config/blackbox.yaml
           env: []
-          image: docker.io/prom/blackbox-exporter:v0.25.0
+          image: docker.io/prom/blackbox-exporter:v0.28.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
