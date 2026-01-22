@@ -143,7 +143,7 @@ spec:
             sloth_service: network
             sloth_slo: requests
             sloth_spec: prometheus/v1
-            sloth_version: v0.11.0
+            sloth_version: v0.15.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-network-requests
       rules:

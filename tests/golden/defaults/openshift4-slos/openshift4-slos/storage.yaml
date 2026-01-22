@@ -143,7 +143,7 @@ spec:
             sloth_service: storage
             sloth_slo: csi-operations
             sloth_spec: prometheus/v1
-            sloth_version: v0.11.0
+            sloth_version: v0.15.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-storage-csi-operations
       rules:
@@ -330,7 +330,7 @@ spec:
             sloth_service: storage
             sloth_slo: storage-canary-bulk
             sloth_spec: prometheus/v1
-            sloth_version: v0.11.0
+            sloth_version: v0.15.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-storage-storage-canary-bulk
       rules:
@@ -519,7 +519,7 @@ spec:
             sloth_service: storage
             sloth_slo: storage-canary-cephfs-fspool-cluster
             sloth_spec: prometheus/v1
-            sloth_version: v0.11.0
+            sloth_version: v0.15.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-storage-storage-canary-cephfs-fspool-cluster
       rules:
@@ -708,7 +708,7 @@ spec:
             sloth_service: storage
             sloth_slo: storage-canary-default
             sloth_spec: prometheus/v1
-            sloth_version: v0.11.0
+            sloth_version: v0.15.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-storage-storage-canary-default
       rules:
