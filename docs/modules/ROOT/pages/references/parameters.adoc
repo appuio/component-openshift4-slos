@@ -600,6 +600,13 @@ default:: `${openshift4_slos:images:canary_scheduler_controller:tag}`
 The Git reference to the canary controller manifests.
 The default is the tag of the canary controller image.
 
+== `canary_scheduler_controller.resources`
+
+[horizontal]
+type:: dictionary
+defaults:: https://github.com/appuio/component-openshift4-slos/blob/master/class/defaults.yml[See `class/defaults.yml`]
+
+This parameter allows users to customize the resource requests and limits of the scheduler-canary controller container.
 
 === `canary_scheduler_controller.kustomize_input`
 
