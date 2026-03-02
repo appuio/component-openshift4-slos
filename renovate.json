@@ -51,7 +51,8 @@
       ],
       "matchPackagePatterns": [
         "^quay.io/appuio/network-canary$",
-        "^quay.io/appuio/scheduler-canary-controller$"
+        "^quay.io/appuio/scheduler-canary-controller$",
+        "^sdocker.io/prom/blackbox-exporter$"
       ]
     }
   ]
