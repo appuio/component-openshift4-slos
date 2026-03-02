@@ -50,6 +50,7 @@
         "bump:minor"
       ],
       "matchPackagePatterns": [
+        "^quay.io/appuio/network-canary$",
         "^quay.io/appuio/scheduler-canary-controller$"
       ]
     }
