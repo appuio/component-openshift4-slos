@@ -9,7 +9,7 @@ parameters:
       sloth:
         registry: ghcr.io
         image: slok/sloth
-        tag: v0.11.0
+        tag: v0.15.0
       blackbox_exporter:
         registry: docker.io
         image: prom/blackbox-exporter
