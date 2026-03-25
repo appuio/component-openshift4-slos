@@ -179,7 +179,7 @@ spec:
             sloth_service: appuio-ch
             sloth_slo: appuio-ch-http-get-availability
             sloth_spec: prometheus/v1
-            sloth_version: v0.11.0
+            sloth_version: v0.15.0
           record: sloth_slo_info
     - name: sloth-slo-alerts-appuio-ch-appuio-ch-http-get-availability
       rules:
